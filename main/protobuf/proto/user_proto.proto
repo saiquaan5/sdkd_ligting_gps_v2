@@ -1,0 +1,567 @@
+syntax = "proto3";
+
+import "common_proto.proto";
+
+option java_package = "vn.toright.server.proto";
+
+message ChannelState {
+  uint32 index = 1;
+  uint32 counter = 2;
+  TrafficLightState lightState = 3;
+  WalkingState walkingState = 4;
+  TrafficLightState mappingState = 5;
+}
+
+/* Gói gửi 1 giây */
+message DeviceStateModel {
+  ConnectionState connectionState = 1;
+  uint32 num_phase = 2;			//Số pha đèn
+  repeated uint32 signal = 3;   //Dữ liệu ngõ ra đèn quy định theo _pin_out_profile_
+  repeated uint32 mapping = 4;  //Dũ liệu ngõ ra đèn ánh xạ quy định theo _pin_out_profile_
+  repeated uint32 countdown = 5; //Biến đếm ngược từng pha đèn Pha [1 - 8]
+  repeated uint32 output_sensor = 7;// Ngõ ra sensor detect ngõ ra quy định theo _pin_out_profile_ = 0 hoạt động bình thường =1 lỗi
+  bool walking_signal = 8;		// tín hiệu đường sắt #0 có tác động
+  bool railway_signal = 9;		//Tín hiệu đi bộ #0 có tác động
+  MTFCMainWorkState cpu_active_mode = 10;	//Chế độ cpu đang hoạt động _mtfc_main_work_state_
+  uint32 idx_time_form = 13;      //(1)
+  uint32 idx_timeline = 14;		//(2)
+  uint32 idx_cycle_form = 15;		//(3)
+  repeated LaneState laneState = 16; // Device không quan tâm message này
+  string cpuTime = 17;
+  uint32 laneActive = 18;
+  bool cpuOnOff = 19;
+  bool isWalkingSignalEnable = 20;
+  bool isRailwaySignalEnable = 21;
+  string cpuType = 22;
+  repeated OneSideLampTime sideTime = 23;
+  uint32 clearanceTime = 24;
+  string activeBegin = 25;
+  string activeEnd = 26;
+  repeated ChannelState channelState = 27;
+}
+
+message UserLoginRequest {
+  string userName = 1;
+  string password = 2;
+  string userId = 3;
+  string assignedStationId = 4;
+  bool isWeb = 5;
+}
+
+message UserLoginResponse {
+  string projectId = 1;
+  string userId = 2;
+  uint32 role = 3;
+  string mapKey = 4;
+  string email = 5;
+  string phone = 6;
+  StatusCode statusCode = 1000;
+}
+
+message GetAccessTokenUserRequest {
+
+}
+
+message GetAccessTokenUserResponse {
+  string accessToken = 1;
+  StatusCode statusCode = 1000;
+}
+
+message AuthUserMessage {
+  UserLoginRequest userLoginRequest = 1;
+  UserLoginResponse userLoginResponse = 2;
+
+  GetAccessTokenUserRequest getAccessTokenUserRequest = 3;
+  GetAccessTokenUserResponse getAccessTokenUserResponse = 4;
+}
+
+message RequireStreamUserRequest {
+  string deviceId = 1;
+  bool enable = 2;
+  bool isWeb = 3;
+}
+
+message RequireStreamUserResponse {
+  StatusCode statusCode = 1000;
+}
+
+message ControlLaneUserRequest {
+  string deviceId = 1;
+  uint32 laneIndex = 2;
+  bool isPowerOn = 3;
+}
+
+message ControlLaneUserResponse {
+  StatusCode statusCode = 1000;
+}
+
+message SetActiveTimeUserRequest {
+  string deviceId = 1;
+  ActiveLamp activeLamp = 2;
+}
+
+message SetActiveTimeUserResponse {
+  StatusCode statusCode = 1000;
+}
+
+message SetCycleConfigUserRequest {
+  string deviceId = 1;
+  uint32 numPhase = 2;
+  uint32 yellowTime = 3;
+  uint32 clearanceTime = 4;
+  repeated uint32 greenTime = 5;
+}
+
+message SetCycleConfigUserResponse {
+
+}
+
+message SetCoordinateUserRequest {
+  string deviceId = 1;
+  double coLat = 2;
+  double coLong = 3;
+}
+
+message SetCoordinateUserResponse {
+
+}
+
+message DeviceControlUserRequest {
+  string deviceId = 1;
+  bool isPowerOn = 2;
+}
+
+message DeviceControlUserResponse {
+
+}
+
+message StateOnChangeUserMessage {
+  string deviceId = 1;
+  DeviceStateModel update1Second = 2;
+}
+
+message UpdateDeviceConnectionState {
+  string deviceId = 1;
+  ConnectionState connectionState = 2;
+}
+
+message LogUpdateUserMessage {
+  string deviceId = 1;
+  string message = 2;
+}
+
+message ErrorStatusUserMessage {
+  string deviceId = 1;
+  uint32 errorStatus = 2;
+  string noteList = 3;
+}
+
+message UpdatePowerStateUserMessage {
+  string deviceId = 1;
+  bool isOn = 2;
+}
+
+message UpdateScheduleUserMessage {
+  string deviceId = 1;
+  string activeBegin = 2;//Thời gian CPU hoạt động chế độ đếm ngược ví dụ 5H00 đến 22h00 (2)
+  string activeEnd = 3;
+}
+
+message UpdateModeUserMessage {
+  string deviceId = 1;
+  uint32 mode = 2;
+}
+
+message DeviceOnchangeUserMessage {
+  UpdateDeviceConnectionState updateDeviceConnectionState = 1;
+  StateOnChangeUserMessage deviceStateOnChange = 2;
+  LogUpdateUserMessage logUpdate = 3;
+  ErrorStatusUserMessage errorStatusUserMessage = 4;
+  UpdatePowerStateUserMessage updatePowerStateUserMessage = 5;
+  UpdateScheduleUserMessage updateScheduleUserMessage = 6;
+  UpdateModeUserMessage updateModeUserMessage = 7;
+}
+
+message SyncTimeUserRequest {
+  string deviceId = 1;
+}
+
+message SyncTimeUserResponse {
+  StatusCode statusCode = 1000;
+}
+
+message GetDeviceUserRequest {
+  string deviceId = 1;
+  string hardwareId = 2;
+}
+
+message GetDeviceUserResponse {
+  Device device = 1;
+  StatusCode statusCode = 1000;
+}
+
+message AddStationUserRequest {
+  string stationName = 1;
+  string hardwareId = 2;
+  float stationLat = 3;
+  float stationLong = 4;
+}
+
+message AddStationUserResponse {
+  StatusCode statusCode = 1000;
+}
+
+message GetCoordinateUserRequest {
+  string deviceId = 1;
+  string hardwareId = 2;
+}
+
+message GetCoordinateUserResponse {
+  float lat = 1;
+  float log = 2;
+  StatusCode statusCode = 1000;
+}
+
+message GetMeterInYearUserRequest {
+  string deviceId = 1;
+}
+
+message GetMeterInYearUserResponse {
+  string deviceId = 1;
+  repeated MeterItem meterItems = 2;
+}
+
+message GetMeterInMonthUserRequest {
+  string deviceId = 1;
+  string month = 2;
+}
+
+message GetMeterInMonthUserResponse {
+  string deviceId = 1;
+  repeated MeterItem meterItems = 2;
+}
+
+message GetMeterInDayUserRequest {
+  string deviceId = 1;
+  string date = 2; // dd/MM/yyyy
+}
+
+message GetMeterInDayUserResponse {
+  string deviceId = 1;
+  repeated MeterItem meterItems = 2;
+}
+
+message DeviceUserMessage {
+  DeviceControlUserRequest deviceControlUserRequest = 1;
+  DeviceControlUserResponse deviceControlUserResponse = 2;
+
+  RequireStreamUserRequest requireStreamUserRequest = 3;
+  RequireStreamUserResponse requireStreamUserResponse = 4;
+
+  ControlLaneUserRequest controlLaneUserRequest = 5;
+  ControlLaneUserResponse controlLaneUserResponse = 6;
+
+  SetActiveTimeUserRequest setActiveTimeUserRequest = 7;
+  SetActiveTimeUserResponse setActiveTimeUserResponse = 8;
+
+  SetCycleConfigUserRequest setCycleConfigUserRequest = 9;
+  SetCycleConfigUserResponse setCycleConfigUserResponse = 10;
+
+  SetCoordinateUserRequest setCoordinateUserRequest = 11;
+  SetCoordinateUserResponse setCoordinateUserResponse = 12;
+
+  SyncTimeUserRequest syncTimeUserRequest = 13;
+  SyncTimeUserResponse syncTimeUserResponse = 14;
+
+  GetDeviceUserRequest getDeviceUserRequest = 15;
+  GetDeviceUserResponse getDeviceUserResponse = 16;
+
+  GetCoordinateUserRequest getCoordinateUserRequest = 17;
+  GetCoordinateUserResponse getCoordinateUserResponse = 18;
+
+  GetMeterInDayUserRequest getMeterInDayUserRequest = 19;
+  GetMeterInDayUserResponse getMeterInDayUserResponse = 20;
+
+  GetMeterInMonthUserRequest getMeterInMonthUserRequest = 21;
+  GetMeterInMonthUserResponse getMeterInMonthUserResponse = 22;
+
+  GetMeterInYearUserRequest getMeterInYearUserRequest = 23;
+  GetMeterInYearUserResponse getMeterInYearUserResponse = 24;
+}
+
+message GetStationUserRequest {
+  string stationId = 1;
+}
+
+message GetStationUserResponse {
+  Station station = 1;
+  StatusCode statusCode = 2;
+}
+
+message GetStationListUserRequest {
+  string projectId = 1;
+}
+
+message GetStationListUserResponse {
+  repeated Station stations = 1;
+  float originLat = 2;
+  float originLong = 3;
+  StatusCode statusCode = 1000;
+}
+
+message SetSignSettingUserRequest {
+  string stationId = 1;
+  repeated SignParam channelRailway = 2;
+  repeated SignParam channelWalking = 3;
+  repeated SignParam channelTurnLeft = 4;
+  repeated SignParam channelTurnRight = 5;
+  repeated SignParam channelGoAhead = 6;
+  repeated SignParam channelTrafficLight = 7;
+  repeated SignParam channelCounter = 8;
+  repeated SignParam channelLabel = 9;
+  string backgroundSrc = 10;
+}
+
+message SetSignSettingUserResponse {
+  StatusCode statusCode = 1000;
+}
+
+message GetLatestFirmwareUserRequest {
+
+}
+
+message GetLatestFirmwareUserResponse {
+  string latestFirmware = 1;
+  string latestAppVersion = 2;
+  StatusCode statusCode = 1000;
+}
+
+message GetLogFileUserRequest {
+  string stationId = 1;
+  string date = 2;
+}
+
+message GetLogFileUserResponse {
+  string log = 1;
+  StatusCode statusCode = 1000;
+}
+
+message DeleteStationUserRequest {
+  string stationId = 1;
+}
+
+message DeleteStationUserResponse {
+  StatusCode statusCode = 1000;
+}
+
+message EditNumberCardUserRequest {
+  string stationId = 1;
+  uint32 nCard = 2;
+}
+
+message EditNumberCardUserResponse {
+  uint32 nCard = 1;
+  StatusCode statusCode = 1000;
+}
+
+message UpdateErrorHandlingUserRequest {
+  string stationId = 1;
+  uint32 errorStatus = 2;
+}
+
+message UpdateDiaryLogUserRequest {
+  string stationId = 1;
+  string message = 2;
+}
+
+message UpdateDiaryLogUserResponse {
+  string fullLog = 1;
+  StatusCode statusCode = 1000;
+}
+
+message InsertAccessoryUserRequest {
+  Accessory accessory = 1;
+}
+
+message InsertAccessoryUserResponse {
+  repeated Accessory accessories = 1;
+  StatusCode statusCode = 1000;
+}
+
+message GetAccessoriesUserRequest {
+  string stationId = 1;
+}
+
+message GetAccessoriesUserResponse {
+  repeated Accessory accessories = 1;
+  StatusCode statusCode = 1000;
+}
+
+message DeleteAccessoryUserRequest {
+  string stationId = 1;
+  string accessoryId = 2;
+}
+
+message DeleteAccessoryUserResponse {
+  repeated Accessory accessories = 1;
+  StatusCode statusCode = 1000;
+}
+
+message EditAccessoryUserRequest {
+  Accessory accessories = 1;
+}
+
+message EditAccessoryUserResponse {
+  repeated Accessory accessories = 1;
+  StatusCode statusCode = 1000;
+}
+
+message UpdateScheduleUserRequest {
+  string stationId = 1;
+  TimeLampForm timeLampForm = 2;
+  CycleLampForm cycle = 3;
+  DayLampForm days = 4;
+}
+
+message UpdateScheduleUserResponse {
+  StatusCode statusCode = 1000;
+}
+
+message GetScheduleUserRequest {
+  string stationId = 1;
+}
+
+message GetScheduleUserResponse {
+  string stationId = 1;
+  TimeLampForm timeLampForm = 2;
+  CycleLampForm cycle = 3;
+  DayLampForm days = 4;
+  StatusCode statusCode = 1000;
+}
+
+enum MeterItemType {
+  METER_ITEM_TYPE_HOUR = 0;
+  METER_ITEM_TYPE_DAY = 1;
+  METER_ITEM_TYPE_MONTH = 2;
+}
+
+message StationUserMessage {
+  GetStationUserRequest getStationUserRequest = 1;
+  GetStationUserResponse getStationUserResponse = 2;
+
+  GetStationListUserRequest getStationListUserRequest = 3;
+  GetStationListUserResponse getStationListUserResponse = 4;
+
+  AddStationUserRequest addStationUserRequest = 5;
+  AddStationUserResponse addStationUserResponse = 6;
+
+  SetSignSettingUserRequest setSignSettingUserRequest = 7;
+  SetSignSettingUserResponse setSignSettingUserResponse = 8;
+
+  GetLatestFirmwareUserRequest getLatestFirmwareUserRequest = 9;
+  GetLatestFirmwareUserResponse getLatestFirmwareUserResponse = 10;
+
+  GetLogFileUserRequest getLogFileUserRequest = 11;
+  GetLogFileUserResponse getLogFileUserResponse = 12;
+
+  DeleteStationUserRequest deleteStationUserRequest = 13;
+  DeleteStationUserResponse deleteStationUserResponse = 14;
+
+  EditNumberCardUserRequest editNumberCardUserRequest = 15;
+  EditNumberCardUserResponse editNumberCardUserResponse = 16;
+
+  UpdateErrorHandlingUserRequest updateErrorHandlingUserRequest = 17;
+
+  UpdateDiaryLogUserRequest updateDiaryLogUserRequest = 18;
+  UpdateDiaryLogUserResponse updateDiaryLogUserResponse = 19;
+
+  InsertAccessoryUserRequest insertAccessoryUserRequest = 20;
+  InsertAccessoryUserResponse insertAccessoryUserResponse = 21;
+
+  GetAccessoriesUserRequest getAccessoriesUserRequest = 22;
+  GetAccessoriesUserResponse getAccessoriesUserResponse = 23;
+
+  DeleteAccessoryUserRequest deleteAccessoryUserRequest = 24;
+  DeleteAccessoryUserResponse deleteAccessoryUserResponse = 25;
+
+  EditAccessoryUserRequest editAccessoryUserRequest = 26;
+  EditAccessoryUserResponse editAccessoryUserResponse = 27;
+
+  UpdateScheduleUserRequest updateScheduleUserRequest = 28;
+  UpdateScheduleUserResponse updateScheduleUserResponse = 29;
+
+  GetScheduleUserRequest getScheduleUserRequest = 30;
+  GetScheduleUserResponse getScheduleUserResponse = 31;
+}
+
+message GetAccountsUserRequest {
+  string projectId = 1;
+}
+
+message GetAccountsUserResponse {
+  repeated Account accounts = 1;
+  StatusCode statusCode = 1000;
+}
+
+message DeleteAccountUserRequest {
+  string userId = 1;
+}
+
+message DeleteAccountUserResponse {
+  StatusCode statusCode = 1000;
+}
+
+message CreateNewAccountUserRequest {
+  string userName = 1;
+  string password = 2;
+  uint32 role = 3;
+}
+
+message CreateNewAccountUserResponse {
+  StatusCode statusCode = 1000;
+}
+
+message ChangePasswordUserRequest {
+  string password = 1;
+  string newPassword = 2;
+}
+
+message ChangePasswordUserResponse {
+  StatusCode statusCode = 1000;
+}
+
+message UpdateAlertInfoUserRequest {
+  string email = 1;
+  string phone = 2;
+}
+
+message UpdateAlertInfoUserResponse {
+  string email = 1;
+  string phone = 2;
+  StatusCode statusCode = 1000;
+}
+
+message AccountUserMessage {
+  GetAccountsUserRequest getAccountsUserRequest = 1;
+  GetAccountsUserResponse getAccountsUserResponse = 2;
+
+  DeleteAccountUserRequest deleteAccountUserRequest = 3;
+  DeleteAccountUserResponse deleteAccountUserResponse = 4;
+
+  CreateNewAccountUserRequest createNewAccountUserRequest = 5;
+  CreateNewAccountUserResponse createNewAccountUserResponse = 6;
+
+  ChangePasswordUserRequest changePasswordUserRequest = 7;
+  ChangePasswordUserResponse changePasswordUserResponse = 8;
+
+  UpdateAlertInfoUserRequest updateAlertInfoUserRequest = 9;
+  UpdateAlertInfoUserResponse updateAlertInfoUserResponse = 10;
+}
+
+message UserMessage {
+  AuthUserMessage authUserMessage = 1;
+  DeviceUserMessage deviceUserMessage = 2;
+  DeviceOnchangeUserMessage deviceOnchangeUserMessage = 3;
+  StationUserMessage stationUserMessage = 4;
+  AccountUserMessage accountUserMessage = 5;
+}

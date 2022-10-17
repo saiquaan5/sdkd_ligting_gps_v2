@@ -1,0 +1,250 @@
+syntax = "proto3";
+option java_package = "vn.toright.server.proto";
+
+enum DeviceType {
+  MTFC_AC = 0; //CPU loại AC
+  MTFC_DC_24 = 1; //CPU DC 24V
+  MTFC_DC_36 = 2; //CPU DC 36V
+  MTFC_DC_48 = 3; //CPU DC 48V
+  MTFC_SOLAR = 4; //CPU năng lượng mặt trời
+  MTFC_SMS_CONTROLLER = 5;
+}
+
+enum AccountRole {
+  NONE = 0;
+  ADMIN = 1;
+  OPERATOR = 2;
+}
+
+message Account {
+  string userId = 1;
+  string userName = 2;
+  AccountRole role = 3;
+  string createDate = 4;
+  bool isCurrentAccount = 5;
+}
+
+message CPUParameter {
+
+}
+
+message CPUScheduler {
+
+}
+
+message Device {
+  string deviceId = 1;
+  string deviceType = 2;
+  DeviceState deviceState = 3;
+  string stationName = 4;
+  string hardwareId = 5;
+  uint32 numPhase = 6;
+  float lat = 7;
+  float log = 8;
+}
+
+message SignParam {
+  uint32 channel = 1;
+  uint32 x = 2;
+  uint32 y = 3;
+  string text = 4;
+}
+
+message StationLaneLightConfig {
+  SignParam countdown = 1;
+  SignParam trafficLight = 2;
+  SignParam walking = 3;
+  SignParam railway = 4;
+  SignParam turnRight = 5;
+  SignParam goAhead = 6;
+  SignParam turnLeft = 7;
+  uint32 index = 8;
+  SignParam label = 9;
+}
+
+message MeterItem {
+  uint32 index = 1;
+  string time = 2;
+  double data = 3;
+  string label = 4;
+}
+
+message Station {
+  string stationId = 1;
+  string name = 2;
+  Device device = 3;
+  float stationLat = 4;
+  float stationLong = 5;
+  uint32 numPhase = 6;
+  repeated StationLaneLightConfig laneLightConfig = 7;
+  string background = 8;
+  string hardwareId = 9;
+  string firmware = 10;
+  string createDate = 11;
+  uint32 numCard = 12;
+  uint32 errorStatus = 13;
+  string errorStatusNote = 14;
+  ConnectionState connectionState = 15;
+  bool isOn = 16;
+  string activeBegin = 17;
+  string activeEnd = 18;
+  repeated MeterItem meterItems = 19;
+  string deviceId = 20;
+  uint32 mode = 21;
+}
+
+message Accessory {
+  string id = 1;
+  string name = 2;
+  string model = 3;
+  string madeBy = 4;
+  string position = 5;
+  string installedPos = 6;
+  string installedDate = 7;
+  string status = 8;
+  string stationId = 9;
+}
+
+enum ConnectionState {
+  CONNECTION_OFFLINE = 0;
+  CONNECTION_ONLINE = 1;
+}
+
+message CardConfig {
+  string serialNumber = 1;
+  uint32 imei = 2;
+  uint32 phase = 3;
+  uint32 isRailwayEnabled = 4;
+}
+
+message MTFCPhaseGateConfig {
+  repeated uint32 pin = 1;
+}
+
+message HMTime {
+  uint32 hour = 1;
+  uint32 minute = 2;
+}
+
+message ActiveLamp {
+  HMTime begin = 1; //Thời gian bắt đầu
+  HMTime end = 2; //Thời gian kết thúc
+}
+
+message OneSideLampTime {
+  uint32 t_green = 1; //Thời gian đèn xanh (1)
+  uint32 t_yellow = 2; //Thời gian đèn vàng(2)
+  uint32 t_red = 3; //Thời gian đèn đỏ(3)
+  uint32 t_start_green = 4; //Mốc thời gian bắt đầu đèn xanh
+  uint32 t_end_green = 5; //Mốc thời gian kết thúc đèn xanh
+  uint32 t_start_yellow = 6; //Mốc thời gian bắt đầu tín hiệu đèn vàng
+  uint32 t_end_yellow = 7; //Mốc thời gian kết thúc tín hiệu đèn vàng
+}
+
+message OneCycleLampTime {
+  uint32 num_side_used = 1; //Số lượng pha điều khiển tín hiệu đèn
+  uint32 period_crossroads = 2;//Tổng chu kỳ tín hiệu đèn
+  repeated OneSideLampTime side = 3;//Thời gian xanh vàng đỏ của từng pha trong 1 chốt tín hiệu
+  uint32 clearance_time_crossroads = 4;//Thời gian giải tỏa
+  bool isModified = 5;
+}
+
+message CycleLampForm {
+  repeated OneCycleLampTime index = 1;
+}
+
+message OneTimeline {
+  HMTime t_begin_apply = 1; //Thời gian bắt đầu áp dụng chiến lược đèn không sử dụng 255: 255
+  uint32 index_cycle_form = 2; //Chỉ số biểu mẫu  [0-31]
+}
+
+message DayTimeLine
+{
+  repeated OneTimeline selectPoint = 1; //Mỗi biễu mấu thời gian có MAX_TIME_LINE mốc thời gian
+}
+
+message TimeLampForm
+{
+  repeated DayTimeLine index = 1; //Số lượng max biểu mẫu thời gian
+}
+
+message DayLampForm {
+  repeated uint32 index = 1;
+}
+
+enum MTFCMainWorkState
+{
+  MTFC_STATE_off = 0; //Cpu đang ở chế độ off chỉ chớp vàng (pin_switch_on ở mức LOW)
+  MTFC_STATE_AUTO = 1;	//CPu đang hoạt động chế độ auto. các ngõ vào switch t[1-4] không tích cực
+  MTFC_STATE_MANUAL = 2;	//CPU đang chế độ điều
+  MTFC_STATE_RAILWAY = 3; //Hoạt động chế độ kết nối đường sắt có tín hiệu pin_switch_railway ở mức HIGH
+  MTFC_STATE_WALKING = 4; //Hoạt động chế độ đi bộ có tín hiệu pin_switch_walking ở mức HIGH
+}
+
+enum PinSwitchProfile
+{
+  PIN_SWITCH_ONOFF = 0;  //[LSB] Tín hiệu on/off: On Cpu hoạt động, Off Cpu chỉ chạy chớp vàng
+  PIN_SWITCH_RAILWAY = 1; //Tín hiệu kết nối đường sắt
+  PIN_SWITCH_WALKING = 2; //Tín hiệu cho chế độ đi bộ
+  PIN_SWITCH_T1 = 3;		//Tín hiệu chọn tuyến 1
+  PIN_SWITCH_T2 = 4;		//Tín hiệu chọn tuyến 2
+  PIN_SWITCH_T3 = 5;		//Tín hiệu chọn tuyến 3
+  PIN_SWITCH_T4 = 6;		//Tín hiệu chọn tuyến 4
+  PIN_SWITCH_OP = 7;       //[MSB]
+}
+
+//Cấu trúc qui định thứ tự bit tín hiệu xuất ra đèn trong 1 byte
+enum PinOutProfile {
+  PIN_GREEN = 0; //Đèn xanh [LSB]
+  PIN_YELLOW = 1;//Đèn vàng
+  PIN_RED = 2;//Đèn đỏ
+  PIN_WALKING_GREEN = 3; //Đèn đi bộ xanh
+  PIN_WALKING_RED = 4; //Đèn đi bộ đỏ
+  PIN_OPTION_1 = 5; //Cổng option 1 (tạm thời chưa dùng đến)
+  PIN_OPTION_2 = 6; //Cổng option 2 (tạm thời chưa dùng đến)
+  PIN_OPTION_3 = 7; //Cổng option 3 (tạm thời chưa dùng đến) [MSB]
+}
+
+enum TrafficLightState {
+  TRAFFIC_LIGHT_STATE_NONE = 0;
+  TRAFFIC_LIGHT_STATE_GREEN = 1;
+  TRAFFIC_LIGHT_STATE_RED = 2;
+  TRAFFIC_LIGHT_STATE_YELLOW = 3;
+}
+
+enum WalkingState {
+  WALKING_STATE_OFF = 0;
+  WALKING_STATE_GREEN = 1;
+  WALKING_STATE_RED = 2;
+}
+
+message LaneState {
+  WalkingState walkingState = 1;
+  TrafficLightState lightState = 2;
+  uint32 counter = 3;
+}
+
+/* Gói gửi 1 giây */
+message DeviceState {
+  ConnectionState connectionState = 1;
+  uint32 num_phase = 2;			//Số pha đèn
+  repeated uint32 signal = 3;   //Dữ liệu ngõ ra đèn quy định theo _pin_out_profile_
+  repeated uint32 mapping = 4;  //Dũ liệu ngõ ra đèn ánh xạ quy định theo _pin_out_profile_
+  repeated uint32 countdown = 5; //Biến đếm ngược từng pha đèn Pha [1 - 8]
+  uint32 rtc_epoch = 6;			// Thời gian thực trên CPU định dạng Unix epoch
+  repeated uint32 output_sensor = 7;// Ngõ ra sensor detect ngõ ra quy định theo _pin_out_profile_ = 0 hoạt động bình thường =1 lỗi
+  uint32 walking_signal = 8;		// tín hiệu đường sắt #0 có tác động
+  uint32 railway_signal = 9;		//Tín hiệu đi bộ #0 có tác động
+  MTFCMainWorkState cpu_active_mode = 10;	//Chế độ cpu đang hoạt động _mtfc_main_work_state_
+  uint32 input_hardware = 11;		//Tín hiệu điều khiển tại tủ _pin_switch_profile_
+  uint32 input_software = 12;		//Tín hiệu điều khiển tại app _pin_switch_profile_
+  uint32 idx_time_form = 13;      //(1)
+  uint32 idx_timeline = 14;		//(2)
+  uint32 idx_cycle_form = 15;		//(3)
+  repeated LaneState laneState = 16; // Device không quan tâm message này
+}
+
+message StatusCode {
+  string message = 1;
+  uint32 code = 2;
+}

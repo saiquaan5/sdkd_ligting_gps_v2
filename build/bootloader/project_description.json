@@ -1,0 +1,20 @@
+{
+    "project_name":       "bootloader",
+    "project_path":       "/Users/mac/project/esp-traffic-gateway/esp-idf/components/bootloader/subproject",
+    "build_dir":          "/Users/mac/project/esp32-ligting-gps/build/bootloader",
+    "config_file":        "/Users/mac/project/esp32-ligting-gps/sdkconfig",
+    "config_defaults":    "",
+    "app_elf":            "bootloader.elf",
+    "app_bin":            "bootloader.bin",
+    "git_revision":       "a0644bf8-dirty",
+    "target":             "esp32",
+    "phy_data_partition": "",
+    "monitor_baud" :      "115200",
+    "monitor_toolprefix": "xtensa-esp32-elf-",
+    "config_environment" : {
+        "COMPONENT_KCONFIGS" : "/Users/mac/project/esp-traffic-gateway/esp-idf/components/efuse/Kconfig;/Users/mac/project/esp-traffic-gateway/esp-idf/components/esp32/Kconfig;/Users/mac/project/esp-traffic-gateway/esp-idf/components/esp_common/Kconfig;/Users/mac/project/esp-traffic-gateway/esp-idf/components/log/Kconfig;/Users/mac/project/esp-traffic-gateway/esp-idf/components/spi_flash/Kconfig",
+        "COMPONENT_KCONFIGS_PROJBUILD" : "/Users/mac/project/esp-traffic-gateway/esp-idf/components/bootloader/Kconfig.projbuild;/Users/mac/project/esp-traffic-gateway/esp-idf/components/esptool_py/Kconfig.projbuild;/Users/mac/project/esp-traffic-gateway/esp-idf/components/partition_table/Kconfig.projbuild"
+    },
+    "build_components" : [ "bootloader", "bootloader_support", "efuse", "esp32", "esp_common", "esp_rom", "esptool_py", "log", "main", "micro-ecc", "partition_table", "soc", "spi_flash", "xtensa", "" ],
+    "build_component_paths" : [ "/Users/mac/project/esp-traffic-gateway/esp-idf/components/bootloader", "/Users/mac/project/esp-traffic-gateway/esp-idf/components/bootloader_support", "/Users/mac/project/esp-traffic-gateway/esp-idf/components/efuse", "/Users/mac/project/esp-traffic-gateway/esp-idf/components/esp32", "/Users/mac/project/esp-traffic-gateway/esp-idf/components/esp_common", "/Users/mac/project/esp-traffic-gateway/esp-idf/components/esp_rom", "/Users/mac/project/esp-traffic-gateway/esp-idf/components/esptool_py", "/Users/mac/project/esp-traffic-gateway/esp-idf/components/log", "/Users/mac/project/esp-traffic-gateway/esp-idf/components/bootloader/subproject/main", "/Users/mac/project/esp-traffic-gateway/esp-idf/components/bootloader/subproject/components/micro-ecc", "/Users/mac/project/esp-traffic-gateway/esp-idf/components/partition_table", "/Users/mac/project/esp-traffic-gateway/esp-idf/components/soc", "/Users/mac/project/esp-traffic-gateway/esp-idf/components/spi_flash", "/Users/mac/project/esp-traffic-gateway/esp-idf/components/xtensa", "" ]
+}

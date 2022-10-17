@@ -1,0 +1,303 @@
+syntax = "proto3";
+
+import "common_proto.proto";
+
+option java_package = "vn.toright.server.proto";
+
+message DeviceRegisterRequest {
+  string hardwareId = 1;
+  string manToken = 2;
+  DeviceType deviceType = 3;
+  uint32 numPhase = 4;
+  string firmwareVersion = 5;
+  string cpuIMEI = 6;
+  float lat = 7;
+  float log = 8;
+  string gatewayVersion = 9;
+}
+
+message DeviceRegisterResponse {
+  string deviceId = 1;
+  StatusCode statusCode = 1000;
+}
+
+message DeviceLoginRequest {
+  string deviceId = 1;
+  string cpuImage = 2;
+}
+
+message DeviceLoginResponse {
+  StatusCode statusCode = 1000;
+}
+
+message DeviceLogUpdate {
+  string deviceId = 1;
+  string message = 2;
+}
+
+message StateOnChangeDeviceMessage {
+  string deviceId = 1;
+  DeviceState update1Second = 2;
+}
+
+message DeviceUpdateConfigureRequest {
+  string deviceId = 1;
+  DeviceType type_cpu = 2;  //Loai cpu _mtfc_cpu_type_t (1)
+  bool walking_mode_enable = 3;              //= true cho phép cpu chuyển sang chế độ đi bộ khi có tín hiệu đi bộ tích cực(1)
+  bool railway_mode_enable = 4;              //= true cho phép cpu chuyển sang chế độ kết nối đường sát khi có tín hiệu tích cực(1)
+  bool power_meters_enable = 5;              //= true có kết nối bộ đo điện tại tủ(1)
+  bool locked_hard_control_enable = 6;       //= true khóa ngõ vào điều khiển tại tủ khi có kết nối từ app
+  bool is_flashing = 7;                      //= true flashing đèn vàng khi ở chế độ off
+  bool is_enable_out485_lamp_port = 8;      //= true xuất tín hiệu ra cổng 485
+  uint32 railway_delay_on_time = 9;         //Thời gian trể tác động on khi có tín hiệu đường sắt
+  uint32 railway_delay_off_time = 10;        //Thời gian trể khi tác động off khi có tín hiệu đường sắt
+  uint32 walking_time = 11;          //Thời gian tích cực của chế đô đi bộ
+  double latitude = 12;                       //Tọa độ trên map của thiết bị(1)
+  double longitude = 13;                      //toa do trên map của thiết bị(1)
+  repeated CardConfig index_card = 14; //Thông số cài đặt card điều khiển
+  repeated MTFCPhaseGateConfig phase_pin_config = 15;//Thông số cài đặt ngõ ra
+}
+
+message DeviceUpdateConfigureResponse {
+  StatusCode statusCode = 1000;
+}
+
+message DeviceUpdateScheduleRequest {
+  string deviceId = 1;
+  uint32 num_side = 2; //Số pha hoạt động của CPU (1)
+  ActiveLamp active_time = 3;//Thời gian CPU hoạt động chế độ đếm ngược ví dụ 5H00 đến 22h00 (2)
+  CycleLampForm cycle = 4; //Biểu mẫu thời gian xanh vàng đỏ (3)
+  TimeLampForm time = 5; //Biểu mẫu thời gian (4)
+  DayLampForm days = 6;//Biểu mẫu trong tuần (5)
+}
+
+message DeviceUpdateScheduleResponse {
+  StatusCode statusCode = 1000;
+}
+
+message DeviceAuthMessage {
+  DeviceRegisterRequest DeviceRegisterRequest = 1;
+  DeviceRegisterResponse deviceRegisterResponse = 2;
+
+  DeviceLoginRequest deviceLoginRequest = 3;
+  DeviceLoginResponse deviceLoginResponse = 4;
+}
+
+message PingWebsocketDeviceRequest {
+  string deviceId = 1;
+}
+
+message PingWebsocketDeviceResponse {
+  StatusCode statusCode = 1000;
+}
+
+message UpdateCoordinateDeviceRequest {
+  string deviceId = 1;
+  float lat = 2;
+  float log = 3;
+}
+
+message UpdateCoordinateDeviceResponse {
+  StatusCode statusCode = 1000;
+}
+
+message AnnounceErrorDeviceRequest {
+  string deviceId = 1;
+  string message = 2;
+  string email = 3;
+  string phone = 4;
+}
+
+message UpdatePowerStateDeviceRequest {
+  string deviceId = 1;
+  bool isOn = 2;
+}
+
+message UpdateMeterDataDeviceRequest {
+  string deviceId = 1;
+  double v1 = 2;
+  double v2 = 3;
+  double v3 = 4;
+
+  double i1 = 5;
+  double i2 = 6;
+  double i3 = 7;
+
+  double p1 = 8;
+  double p2 = 9;
+  double p3 = 10;
+
+  double a1 = 11;
+  double a2 = 12;
+  double a3 = 13;
+
+  double power = 14;
+}
+
+message UpdateModeDeviceRequest {
+  string deviceId = 1;
+  MTFCMainWorkState mode = 2;
+}
+
+message DeviceUpdateMessage {
+  DeviceLogUpdate deviceLogUpdate = 1;
+
+  StateOnChangeDeviceMessage stateOnChange  = 2;
+
+  DeviceUpdateConfigureRequest deviceUpdateConfigureRequest = 3;
+  DeviceUpdateConfigureResponse deviceUpdateConfigureResponse = 4;
+
+  PingWebsocketDeviceRequest pingWebsocketDeviceRequest = 5;
+  PingWebsocketDeviceResponse pingWebsocketDeviceResponse = 6;
+
+  DeviceUpdateScheduleRequest deviceUpdateScheduleRequest = 7;
+  DeviceUpdateScheduleResponse deviceUpdateScheduleResponse = 8;
+
+  UpdateCoordinateDeviceRequest updateCoordinateDeviceRequest = 9;
+  UpdateCoordinateDeviceResponse updateCoordinateDeviceResponse = 10;
+
+  AnnounceErrorDeviceRequest announceErrorDeviceRequest = 11;
+
+  UpdatePowerStateDeviceRequest updatePowerStateDeviceRequest = 12;
+
+  UpdateModeDeviceRequest updateModeDeviceRequest = 13;
+
+  UpdateMeterDataDeviceRequest updateMeterDataDeviceRequest = 14;
+
+}
+
+message RequireStreamDeviceRequest {
+  string deviceId = 1;
+  bool enable = 2;
+}
+
+message RequireStreamDeviceResponse {
+  StatusCode statusCode = 1000;
+}
+
+message ControlLaneDeviceRequest {
+  string deviceId = 1;
+  uint32 laneIndex = 2;
+  bool isPowerOn = 3;
+}
+
+message ControlLaneDeviceResponse {
+  StatusCode statusCode = 1000;
+}
+
+message SetActiveTimeDeviceRequest {
+  string deviceId = 1;
+  ActiveLamp activeLamp = 2;
+}
+
+message SetActiveTimeDeviceResponse {
+  StatusCode statusCode = 1000;
+}
+
+message SetCycleConfigDeviceRequest {
+  string deviceId = 1;
+  uint32 numPhase = 2;
+  uint32 yellowTime = 3;
+  uint32 clearanceTime = 4;
+  repeated uint32 greenTime = 5;
+}
+
+message SyncTimeDeviceRequest {
+  string deviceId = 1;
+}
+
+message SyncTimeDeviceResponse {
+  StatusCode statusCode = 1000;
+}
+
+message GetCoordinateDeviceRequest {
+  string deviceId = 1;
+}
+
+message GetCoordinateDeviceResponse {
+  float lat = 1;
+  float log = 2;
+  StatusCode statusCode = 1000;
+}
+
+message TriggerNotifyUserDeviceRequest {
+  string deviceId = 1;
+  string phone = 2;
+  string email = 3;
+  string message = 4;
+}
+
+message TriggerNotifyUserDeviceResponse {
+  StatusCode statusCode = 1000;
+}
+
+message UpdateScheduleUserDeviceRequest {
+  string deviceId = 1;
+  TimeLampForm timeLampForm = 2;
+  CycleLampForm cycle = 3;
+  DayLampForm days = 4;
+  ActiveLamp active_time = 5;//Thời gian CPU hoạt động chế độ đếm ngược ví dụ 5H00 đến 22h00 (2)
+}
+
+message UpdateScheduleUserDeviceResponse {
+  StatusCode statusCode = 1000;
+}
+
+message PowerControlUserRequest {
+  string deviceId = 1;
+  bool isPowerOn = 2;
+}
+
+message SetDeviceActiveTimeUserRequest {
+  string deviceId = 1;
+  int32 start_hour = 2;
+  int32 start_minute = 3;
+  int32 end_hour = 4;
+  int32 end_minute = 5;
+}
+
+message ForceOTAUpdateUserRequest {
+  string deviceId = 1;
+}
+
+message ReleaseControlUserRequest {
+  string deviceId = 1;
+}
+
+message UserDeviceMessage {
+  RequireStreamDeviceRequest requireStreamDeviceRequest = 1;
+  RequireStreamDeviceResponse requireStreamDeviceResponse = 2;
+
+  ControlLaneDeviceRequest controlLaneDeviceRequest = 3;
+  ControlLaneDeviceResponse controlLaneDeviceResponse = 4;
+
+  SetActiveTimeDeviceRequest setActiveTimeDeviceRequest = 7;
+  SetActiveTimeDeviceResponse setActiveTimeDeviceResponse = 8;
+
+  SetCycleConfigDeviceRequest setCycleConfigDeviceRequest = 9;
+
+  SyncTimeDeviceRequest syncTimeDeviceRequest = 10;
+  SyncTimeDeviceResponse syncTimeDeviceResponse = 11;
+
+  GetCoordinateDeviceRequest getCoordinateDeviceRequest = 12;
+  GetCoordinateDeviceResponse getCoordinateDeviceResponse = 13;
+
+  TriggerNotifyUserDeviceRequest triggerNotifyUserDeviceRequest = 14;
+  TriggerNotifyUserDeviceResponse triggerNotifyUserDeviceResponse = 15;
+
+  UpdateScheduleUserDeviceRequest updateScheduleUserDeviceRequest = 16;
+  UpdateScheduleUserDeviceResponse updateScheduleUserDeviceResponse = 17;
+
+  PowerControlUserRequest powerControlUserRequest = 18;
+
+  ForceOTAUpdateUserRequest forceOTAUpdateUserRequest = 19;
+
+  ReleaseControlUserRequest releaseControlUserRequest = 20;
+
+}
+
+message DeviceMessage {
+  DeviceAuthMessage deviceAuthMessage = 1;
+  DeviceUpdateMessage deviceUpdateMessage = 2;
+  UserDeviceMessage userDeviceMessage = 3;
+}

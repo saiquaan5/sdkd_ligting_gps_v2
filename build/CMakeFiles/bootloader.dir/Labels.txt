@@ -1,0 +1,13 @@
+# Target labels
+ bootloader
+# Source files and their labels
+/Users/mac/project/esp32-ligting-gps/build/CMakeFiles/bootloader
+/Users/mac/project/esp32-ligting-gps/build/CMakeFiles/bootloader.rule
+/Users/mac/project/esp32-ligting-gps/build/CMakeFiles/bootloader-complete.rule
+/Users/mac/project/esp32-ligting-gps/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule
+/Users/mac/project/esp32-ligting-gps/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule
+/Users/mac/project/esp32-ligting-gps/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule
+/Users/mac/project/esp32-ligting-gps/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule
+/Users/mac/project/esp32-ligting-gps/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule
+/Users/mac/project/esp32-ligting-gps/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule
+/Users/mac/project/esp32-ligting-gps/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule

@@ -1,0 +1,17 @@
+id: device-id
+switcher: 1/2/3/4
+day
+month
+year
+hour
+minute
+second
+
+repeat bool
+mon bool
+tue
+wed
+thu
+fri
+sat
+sun

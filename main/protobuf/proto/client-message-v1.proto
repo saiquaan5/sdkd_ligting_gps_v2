@@ -1,0 +1,584 @@
+// Sử dụng proto3
+syntax = "proto3";
+
+/***** Import messages *****/
+option java_package = "com.sunshine.smarthome.server.message.protobuf";
+option java_outer_classname = "ClientBuf";
+import "common-message-v1.proto";
+
+/***** Messages ClientRequest/ClientResponse của các Devices *****/
+/* Thiết bị kết nối wifi Devices */
+// Nhận được yêu cầu cập nhật Firmware
+message ForceUpdateFirmwareDeviceClientRequest {
+	string hardwareId = 1; // hardwareId của thiết bị
+}
+
+// Phản hồi thông tin cập nhật Firmware
+message ForceUpdateFirmwareDeviceClientResponse {
+	string deviceId = 1; // deviceId của thiết bị
+	StatusCode statusCode = 1000;
+}
+
+// Nhận được yêu cầu cập nhật thiết bị
+message UpdateDeviceClientRequest {
+	uint32 updateMode = 1; // Update tự động hoặc thủ công
+	string hardwareId = 2; // hardwareId của thiết bị
+	uint32 reactivity = 3; // Độ nhạy của thiết bị
+	uint32 brightness = 4; // Độ sáng của thiết bị
+	uint32 timeDelay = 5; // Thời gian chờ để tắt PIR
+	uint32 enableDoubleTap = 6; // Tính năng double tap cho touch
+}
+
+// Phản hồi cập nhật thiết bị
+message UpdateDeviceClientResponse {
+	string deviceId = 1; // deviceId của thiết bị
+
+	StatusCode statusCode = 1000;
+}
+
+// [Deprecated]
+// Phản hồi thông tin phần trăm cập nhật firmware runtime
+message ProgressUpdateFirmwareOnChangedDeviceClientResponse {
+	string deviceId = 1; // DeviceId cho việc đồng bộ tài khoản nhiều thiết bị
+	string hardwareId = 2; // HardwareId thiết bị khi qua Root
+	uint32 pageSize = 3; // Để thiết bị biết max/len của buffer
+	uint32 pageIndex = 4; // Vị trí index hiện tại bắt đầu từ 0
+	uint32 totalPage = 5; // Tổng page
+
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thông tin kết nối của các thiết bị runtime
+message DeviceOnChangedDeviceClientResponse {
+	string deviceId = 1; // DeviceId
+	ConnectionState connectionState = 2; // Offline/Online/Disconect
+
+	StatusCode statusCode = 1000;
+}
+
+/* Thiết bị Công tắc */
+// Nhận được yêu cầu gửi danh sách công tắc của 1 thiết bị
+message GetSwitchersClientRequest {
+	string hardwareId = 1; // hardwareId của thiết bị
+}
+
+// Phản hồi danh sách công tắc của 1 thiết bị
+message GetSwitchersClientResponse {
+	Switcher switchers = 1; // Thông tin về thiết bị
+	string deviceId = 2; // deviceId của thiết bị
+
+	StatusCode statusCode = 1000;
+}
+
+// Nhận được yêu cầu gửi trạng thái của 1 nút của công tắc
+message GetSwitcherClientRequest {
+	uint32 switcher = 1; // Công tắc 1,2,3,4
+	string hardwareId = 2; // hardwareId của thiết bị
+}
+
+// Phản hồi trạng thái của 1 nút của công tắc
+message GetSwitcherClientResponse {
+	uint32 switcher = 1; // Công tắc 1,2,3,4
+	PowerState powerState = 2; // Trạng thái ON/OFF
+	Device device = 3; // Thông tin về thiết bị
+	DateTime datetime = 4; // Thời gian chuyển trạng thái của công tắc
+	string deviceId = 5; // deviceId của thiết bị
+
+	StatusCode statusCode = 1000;
+}
+
+// Nhận được yêu cầu trả về nhật ký, hành trình thiết bị
+message GetLogSwitcherClientRequest {
+	uint32 switcher = 1; // Công tắc 1,2,3,4
+	string hardwareId = 2; // hardwareId của thiết bị
+}
+
+// Phản hồi nhật ký/hành trình thiết bị
+message GetLogSwitcherClientResponse {
+	uint32 switcher = 1; // Công tắc 1,2,3,4
+	uint32 totalTimeOnOrgin = 2;
+	uint32 totalTimeOnYear = 3;
+	uint32 totalTimeOnMonth = 4;
+	uint32 timeOnLastDate = 5;
+	uint32 timeOffLastDate = 6;
+	string deviceId = 7; // deviceId của thiết bị
+
+	StatusCode statusCode = 1000;
+}
+
+// Nhận được yêu cầu thay đổi On/Off thiết bị
+message SwitcherClientRequest {
+	string deviceId = 1; // Chỉ được sử dụng khi dùng topic
+	uint32 switcher = 2; // Công tắc 1,2,3,4
+	PowerState powerState = 3; // Trạng thái ON/OFF
+	string hardwareId = 4; // hardwareId của thiết bị
+}
+
+// Phản hồi thay đổi On/Off thiết bị
+message SwitcherClientResponse {
+	uint32 switcher = 1; // Công tắc 1,2,3,4
+	PowerState powerState = 2; // Trạng thái ON/OFF
+	string deviceId = 3; // deviceId
+
+	StatusCode statusCode = 1000;
+}
+
+// Nhận được yêu cầu cập nhật 1 nút công tắc
+message UpdateSwitcherClientRequest {
+	uint32 switcher = 1; // Công tắc 1,2,3,4
+	uint32 keepState = 2; // 0: Off, 1: On, 2: Keep giữ trạng thái cũ
+	string hardwareId = 3; // hardwareId của thiết bị
+}
+
+// Nhận được yêu cầu cập nhật 1 nút công tắc
+message UpdateSwitcherClientResponse {
+	string deviceId = 1; // deviceId
+
+	StatusCode statusCode = 1000;
+}
+
+// Nhận được yêu cầu thêm mới 1 lịch của 1 công tắc
+message AddSwitcherScheduleClientRequest {
+	SwitcherSchedule schedule = 1;
+	string hardwareId = 2; // hardwareId của thiết bị
+}
+
+// Phản hồi thêm mới 1 lịch của 1 công tắc
+message AddSwitcherScheduleClientResponse {
+	string switcherScheduleId = 1;
+	string deviceId = 2; // deviceId của thiết bị
+
+	StatusCode statusCode = 1000;
+}
+
+// Nhận được yêu cầu update 1 lịch của 1 công tắc
+message UpdateSwitcherScheduleClientRequest {
+	SwitcherSchedule schedule = 1;
+	string hardwareId = 2; // hardwareId của thiết bị
+}
+
+// Phản hồi update 1 lịch của 1 công tắc
+message UpdateSwitcherScheduleClientResponse {
+	string switcherScheduleId = 1;
+	string deviceId = 2; // deviceId của thiết bị
+
+	StatusCode statusCode = 1000;
+}
+
+// Nhận được yêu cầu xóa 1 lịch của 1 công tắc
+message DeleteSwitcherScheduleClientRequest {
+	string switcherScheduleId = 1; // Id của switcherScheduleId
+	string hardwareId = 2; // hardwareId của thiết bị
+}
+
+// Phản hồi xóa 1 lịch của 1 công tắc
+message DeleteSwitcherScheduleClientResponse {
+	string switcherScheduleId = 1;
+	string deviceId = 2; // deviceId của thiết bị
+
+	StatusCode statusCode = 1000;
+}
+
+message TouchBridgeInfo {
+	uint32 targetSwitcher = 1;
+	string targetHardwareId = 2;
+	uint32 bridgeType = 3; // 1: Cùng On/Off, 2: Đảo ngược
+}
+// Dùng cho trường công tắc chủ động gửi On/Off lên server
+// Phản hồi thông tin thay đổi các chỉ số của thiết bị điện/nước runtime
+message SwitcherOnChangedClientResponse {
+	uint32 switcher = 1; // Công tắc 1,2,3,4
+	PowerState powerState = 2; // Trạng thái ON/OFF
+	string deviceId = 3; // deviceId của thiết bị
+	TouchBridgeInfo bridge = 4;
+	StatusCode statusCode = 1000;
+}
+
+/* Thiết bị rèm cửa */
+// Nhận được lệnh điều khiển rèm cửa
+message CurtainSwitcherClientRequest {
+	uint32 percentIn = 1; // Phần trăm hướng trong
+	uint32 percentOut = 2; // Phần trăm hướng ngoài
+	string hardwareId = 3; // hardwareId của thiết bị
+}
+
+// Nhận được yêu cầu thêm mới 1 lịch của rèm cửa
+message AddCurtainSwitcherScheduleClientRequest {
+	CurtainSwitcherSchedule schedule = 1;
+	string hardwareId = 2; // hardwareId của thiết bị
+}
+
+// Nhận được yêu cầu update 1 lịch của rèm cửa
+message UpdateCurtainSwitcherScheduleClientRequest {
+	CurtainSwitcherSchedule schedule = 1;
+	string hardwareId = 2; // hardwareId của thiết bị
+}
+
+// Nhận được yêu cầu xóa 1 lịch của rèm cửa
+message DeleteCurtainSwitcherScheduleClientRequest {
+	string curtainSwitcherScheduleId = 1; // Id của curtainSwitcherScheduleId
+	string hardwareId = 2; // hardwareId của thiết bị
+}
+
+// Phản hồi lệnh điều khiển rèm cửa
+message CurtainSwitcherClientResponse {
+	uint32 percentIn = 1; // Phần trăm hướng trong
+	uint32 percentOut = 2; // Phần trăm hướng ngoài
+	string deviceId = 3; // deviceId của thiết bị
+
+	StatusCode statusCode = 1000;
+}
+
+// Dùng cho trường công tắc rèm cửa chủ động gửi trạng thái lên server
+// Phản hồi thông tin thay đổi trạng thái của điều hòa runtime
+message CurtainSwitcherOnChangedClientResponse {
+	uint32 percentIn = 1; // Phần trăm hướng trong
+	uint32 percentOut = 2; // Phần trăm hướng ngoài
+	string deviceId = 3; // deviceId của thiết bị
+
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thêm mới 1 lịch của rèm cửa
+message AddCurtainSwitcherScheduleClientResponse {
+	string curtainSwitcherScheduleId = 1;
+	string deviceId = 2; // deviceId của thiết bị
+
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi update 1 lịch của rèm cửa
+message UpdateCurtainSwitcherScheduleClientResponse {
+	string curtainSwitcherScheduleId = 1;
+	string deviceId = 2; // deviceId của thiết bị
+
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi xóa 1 lịch của rèm cửa
+message DeleteCurtainSwitcherScheduleClientResponse {
+	string curtainSwitcherScheduleId = 1;
+	string deviceId = 2; // deviceId của thiết bị
+
+	StatusCode statusCode = 1000;
+}
+
+/* Kịch bản */
+// Nhận được yêu về cầu kịch bản bắc cầu
+message SceneClientRequest {
+	string sceneId = 1; // sceneId
+
+	repeated Switcher Switchers = 2; // 2 Công tắc bắc cầu
+
+	uint32 type = 3; // 1: Cùng On/Off, 2: Đảo ngược
+
+	uint32 mode = 4; // 1: Add, 2: Edit, 3: Delete
+
+	string hardwareId = 5;
+}
+
+// Phản hồi về kịch bản bắc cầu
+message SceneClientResponse {
+	string sceneId = 1; // sceneId
+
+	Switcher switcher = 2; 	// switcher
+
+	uint32 mode = 3; // 1: Add, 2: Edit, 3: Delete
+
+	StatusCode statusCode = 1000;
+}
+
+/* Thiết bị cảm biến chuyển động */
+// Nhận được yêu cầu thay đổi trạng thái chuyển động
+message MotionClientRequest {
+	string hardwareId = 1; // hardwareId của thiết bị
+	MotionState montionState = 2; // state
+}
+
+// Phản hồi thay đổi On/Off thiết bị
+message MotionClientResponse {
+	string deviceId = 1; // deviceId
+	MotionState montionState = 2; // state
+
+	StatusCode statusCode = 1000;
+}
+
+message MotionOnChangedClientResponse {
+	string deviceId = 1; // deviceId của thiết bị
+	MotionState montionState = 2; // state
+
+	StatusCode statusCode = 1000;
+}
+
+/* Điện/nước */
+// Phản hồi thông tin thay đổi các chỉ số của thiết bị điện/nước runtime
+message MeterOnChangedClientResponse {
+	repeated MeterIndex indexs = 1;
+
+	StatusCode statusCode = 1000;
+}
+
+// Nhận được yêu cầu bắt đầu cập nhật Firmware điện/nước
+message BeginUpdateFirmwareMeterDeviceClientRequest {
+}
+
+// Phản hồi thông tin bắt đầu cập nhật Firmware điện/nước
+message BeginUpdateFirmwareMeterDeviceClientResponse {
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thông tin phần trăm cập nhật firmware điện/nước runtime
+message ProgressUpdateFirmwareOnChangedMeterDeviceClientResponse {
+	uint32 percent = 1; // Phần trăm tiến độ cập nhật Firmware
+	StatusCode statusCode = 1000;
+}
+
+/* Điều hòa */
+// Nhận được yêu cầu điều khiển điều hòa
+message AirConditionerClientRequest {
+	AirConditionerState state = 1; // Dành cho điều hòa điều khiển bằng dây
+	string hardwareId = 2; // hardwareId của thiết bị
+	string encode = 3; // Chuỗi mã hóa dành cho điều hòa điều khiển bằng IR
+}
+
+// Phản hồi yêu cầu điều khiển điều hòa
+message AirConditionerClientResponse {
+	AirConditionerState state = 1;
+	string deviceId = 2; // deviceId của thiết bị
+
+	StatusCode statusCode = 1000;
+}
+
+// Nhận được yêu cầu gửi trạng thái điều hòa
+message GetAirConditionerClientRequest {
+	string hardwareId = 1; // hardwareId của thiết bị
+}
+
+// Phản hồi trạng thái điều hòa mới nhất
+message GetAirConditionerClientResponse {
+	AirConditionerState state = 1;
+	string deviceId = 2; // deviceId của thiết bị
+
+	StatusCode statusCode = 1000;
+}
+
+// Dùng cho trường điều hòa chủ động gửi trạng thái lên server, runtime
+message AirConditionerOnChangedClientResponse {
+	AirConditionerState state = 1;
+	string deviceId = 2; // deviceId của thiết bị
+
+	StatusCode statusCode = 1000;
+}
+
+/* Thiết bị Đo chất lượng không khí, AQI */
+message GetAirQualitySensorClientRequest {
+	string hardwareId = 1; // hardwareId của thiết bị
+}
+
+message GetAirQualitySensorClientResponse {
+	AirQualitySensor airQualitySensor = 1;
+	string deviceId = 2; // deviceId của thiết bị
+	StatusCode statusCode = 1000;
+}
+
+message AirQualitySensorOnChangedClientResponse {
+	AirQualitySensor airQualitySensor = 1;
+	string deviceId = 2; // deviceId của thiết bị
+
+	StatusCode statusCode = 1000;
+}
+
+message UpdateAirQualitySensorScheduleClientRequest {
+	string deviceId = 1; // deviceId của thiết bị
+	uint32 report_interval_sec = 2;
+}
+
+message UpdateAirQualitySensorScheduleClientResponse {
+	string deviceId = 1; // deviceId của thiết bị
+	uint32 report_interval_sec = 2;
+	StatusCode statusCode = 1000;
+}
+
+message AirQualitySensorClientMessage {
+	GetAirQualitySensorClientRequest getAirQualitySensorClientRequest = 1;
+	GetAirQualitySensorClientResponse getAirQualitySensorClientResponse = 2;
+	UpdateAirQualitySensorScheduleClientRequest updateAirQualitySensorScheduleClientRequest = 3;
+	UpdateAirQualitySensorScheduleClientResponse updateAirQualitySensorScheduleClientResponse = 4;
+}
+
+/* Thiết bị HomeKit Gateway */
+
+/* Thiết bị Remote chung */
+// Nhận được lệnh gửi đến thiết bị
+message SendCommandRemoteClientRequest {
+	repeated uint32 commands = 1 [packed=true];
+	TypeLearn type = 2; // IR or RF
+	string hardwareId = 3; // hardwareId của thiết bị
+}
+
+// Nhận được yêu cầu học lệnh
+message LearnCommandRemoteClientRequest {
+	string remoteId = 1; // Id của remote
+	string remoteLibraryCmdId = 2; // Id của lệnh từ thư viện
+	string remoteMutilLibraryCmdId = 3; // Id của lệnh từ remote đa năng
+	uint32 timeout = 4; // Thiết lập timout cho client khi học lệnh
+	TypeLearn type = 5; // IR or RF
+	string hardwareId = 6; // hardwareId của thiết bị
+}
+
+// Phản hồi lệnh gửi đến thiết bị
+message SendCommandRemoteClientResponse {
+	string deviceId = 1; // deviceId của thiết bị
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi yêu cầu học lệnh
+message LearnCommandRemoteClientResponse {
+	string remoteId = 1; // Id của remote
+	string remoteLibraryCmdId = 2; // Id của lệnh từ thư viện
+	string remoteMutilLibraryCmdId = 3; // Id của lệnh từ remote đa năng
+	repeated uint32 commands = 4 [packed=true]; // Lệnh học được
+	TypeLearn type = 5; // IR or RF
+	string deviceId = 6; // deviceId của thiết bị
+
+	StatusCode statusCode = 1000;
+}
+
+/***** Đóng gói messages *****/
+/* Thiết bị kết nối wifi Devices */
+message DeviceClientMessage {
+	ForceUpdateFirmwareDeviceClientRequest forceUpdateFirmwareDeviceClientRequest = 1;
+	ForceUpdateFirmwareDeviceClientResponse forceUpdateFirmwareDeviceClientResponse = 2;
+	UpdateDeviceClientRequest updateDeviceClientRequest = 3;
+	UpdateDeviceClientResponse updateDeviceClientResponse = 4;
+}
+
+/* Thiết bị Công tắc */
+message SwitcherClientMessage {
+	GetSwitchersClientRequest getSwitchersClientRequest = 1;
+	GetSwitchersClientResponse getSwitchersClientResponse = 2;
+
+	GetSwitcherClientRequest getSwitcherClientRequest = 3;
+	GetSwitcherClientResponse getSwitcherClientResponse = 4;
+
+	GetLogSwitcherClientRequest getLogSwitcherClientRequest = 5;
+	GetLogSwitcherClientResponse getLogSwitcherClientResponse = 6;
+
+	SwitcherClientRequest switcherClientRequest = 7;
+	SwitcherClientResponse switcherClientResponse = 8;
+
+	AddSwitcherScheduleClientRequest addSwitcherScheduleClientRequest = 9;
+	AddSwitcherScheduleClientResponse addSwitcherScheduleClientResponse = 10;
+
+	UpdateSwitcherScheduleClientRequest updateSwitcherScheduleClientRequest = 11;
+	UpdateSwitcherScheduleClientResponse updateSwitcherScheduleClientResponse = 12;
+
+	DeleteSwitcherScheduleClientRequest deleteSwitcherScheduleClientRequest = 13;
+	DeleteSwitcherScheduleClientResponse deleteSwitcherScheduleClientResponse = 14;
+
+	UpdateSwitcherClientRequest updateSwitcherClientRequest = 15;
+	UpdateSwitcherClientResponse updateSwitcherClientResponse = 16;
+}
+
+/* Thiết bị rèm cửa */
+message CurtainSwitcherClientMessage {
+	CurtainSwitcherClientRequest curtainSwitcherClientRequest = 1;
+	CurtainSwitcherClientResponse curtainSwitcherClientResponse = 2;
+
+	AddCurtainSwitcherScheduleClientRequest addCurtainSwitcherScheduleClientRequest = 3;
+	AddCurtainSwitcherScheduleClientResponse addCurtainSwitcherScheduleClientResponse = 4;
+
+	UpdateCurtainSwitcherScheduleClientRequest updateCurtainSwitcherScheduleClientRequest = 5;
+	UpdateCurtainSwitcherScheduleClientResponse updateCurtainSwitcherScheduleClientResponse = 6;
+
+	DeleteCurtainSwitcherScheduleClientRequest deleteCurtainSwitcherScheduleClientRequest = 7;
+	DeleteCurtainSwitcherScheduleClientResponse deleteCurtainSwitcherScheduleClientResponse = 8;
+}
+
+/* Thiết bị rèm cửa */
+message MotionClientMessage {
+	MotionClientRequest motionClientRequest = 1;
+	MotionClientResponse motionClientResponse = 2;
+}
+
+/* Kịch bản */
+message SceneClientMessage {
+	SceneClientRequest sceneClientRequest = 1;
+	SceneClientResponse sceneClientResponse = 2;
+}
+
+/* Events runtime */
+message OnChangedClientMessage {
+	MeterOnChangedClientResponse meterOnChangedClientResponse = 1;
+	SwitcherOnChangedClientResponse switcherOnChangedClientResponse = 2;
+	CurtainSwitcherOnChangedClientResponse curtainSwitcherOnChangedClientResponse = 3;
+	AirConditionerOnChangedClientResponse airConditionerOnChangedClientResponse = 4;
+	ProgressUpdateFirmwareOnChangedDeviceClientResponse progressUpdateFirmwareOnChangedDeviceClientResponse = 5;
+	DeviceOnChangedDeviceClientResponse deviceOnChangedDeviceClientResponse = 6;
+	MotionOnChangedClientResponse motionOnChangedClientResponse = 7;
+	AirQualitySensorOnChangedClientResponse airQualitySensorOnChangedClientResponse = 8;
+}
+
+/* Điều hòa */
+message AirConditionerClientMessage {
+	AirConditionerClientRequest airConditionerClientRequest = 1;
+	AirConditionerClientResponse airConditionerClientResponse = 2;
+	GetAirConditionerClientRequest getAirConditionerClientRequest = 3;
+	GetAirConditionerClientResponse getAirConditionerClientResponse = 4;
+}
+
+/* Thiết bị Remote */
+message RemoteClientMessage {
+	SendCommandRemoteClientRequest sendCommandRemoteClientRequest = 1;
+	SendCommandRemoteClientResponse sendCommandRemoteClientResponse = 2;
+
+	LearnCommandRemoteClientRequest learnCommandRemoteClientRequest = 3;
+	LearnCommandRemoteClientResponse learnCommandRemoteClientResponse = 4;
+}
+
+/* Client Message */
+message ClientMessage {
+	/* Thiết bị kết nối wifi Devices */
+	DeviceClientMessage deviceClientMessage = 1;
+
+	/* Thiết bị Công tắc */
+	SwitcherClientMessage switcherClientMessage = 2;
+
+	/* Thiết bị rèm cửa */
+	CurtainSwitcherClientMessage curtainSwitcherClientMessage = 3;
+
+	/* Điều hòa */
+	AirConditionerClientMessage airConditionerClientMessage = 4;
+
+	/* Thiết bị Remote */
+	RemoteClientMessage remoteClientMessage = 5;
+
+	/* Events runtime */
+	OnChangedClientMessage onChangedClientMessage = 6;
+
+	/* Thiết bị Motion */
+	MotionClientMessage motionClientMessage = 7;
+
+	/* Kịch bản */
+	SceneClientMessage sceneClientMessage = 8;
+
+	AirQualitySensorClientMessage airQualitySensorClientMessage = 9;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

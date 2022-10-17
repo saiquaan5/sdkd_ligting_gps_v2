@@ -1,0 +1,1321 @@
+// Sử dụng proto3
+syntax = "proto3";
+
+/***** Optimize *****/ 
+option java_package = "com.sunshine.smarthome.server.message.protobuf";
+option java_outer_classname = "ServerBuf";
+
+/***** Import messages *****/ 
+import "common-message-v1.proto";
+
+/***** Messages Request/Response của Server *****/
+/* Đăng nhập hệ thống */
+// Nhận được yêu cầu đăng nhập từ App hoặc Client
+message LoginServerRequest {
+	string accessToken = 1; // Dùng để đăng nhập cho App
+	string facebookToken = 2; // Dùng để đăng nhập cho App
+	string googleToken = 3; // Dùng để đăng nhập cho App
+	string accessKey = 4; // Dùng để đăng nhập cho Client
+	string deviceId = 5; // DeviceId của thiết bị
+	string loggedOS = 6; // Hệ điều hành đăng nhập
+	string versionOS = 7; // Phiên bản hệ điều hành
+	string loggedIP = 8; // Ip đăng nhập
+	string mdns = 9; // Domain thiết bị
+	string brandName = 10; // BrandnName
+	string model = 11; // Model
+	int32 signal = 12; // Tín hiệu sóng, Lưu trên server?
+	string firmware = 13; // Firmware
+	string hardware = 14; // Hardware
+	GroupDevice group = 15; // Nhóm thiết bị công tắc, rèm cửa...
+}
+
+// Phản hồi thông tin đăng nhập cho App hoặc Client
+message LoginServerResponse {
+	string userId = 1;
+	string deviceId = 2;
+	string accessToken = 3;
+	string refreshToken = 4;
+	string accessKey = 5;
+	Home home = 6; // Tên của ngôi nhà
+	StatusCode statusCode = 1000;
+}
+
+/* RefreshToken */
+// Nhận được yêu cầu RefreshToken
+message RefreshTokenServerRequest {
+	string accessToken = 1; // Access Token cũ
+	string refreshToken = 2; // Dùng để RefreshToken cho App, User
+}
+
+// Phản hồi RefreshToken
+message RefreshTokenServerResponse {
+	string accessToken = 1;
+	string refreshToken = 2;
+	StatusCode statusCode = 1000;
+}
+
+/* Mã kích hoạt */
+// Nhận được yêu cầu gửi lại tin nhắn kích hoạt
+message SendCodeServerRequest {
+	string phoneNumber = 1; // Số điện thoại
+}
+
+// Nhận được yêu cầu kiểm tra mã kích hoạt bằng số điện thoại
+message VerifyCodeServerRequest {
+	string phoneNumber = 1; // Số điện thoại
+	string code = 2; // Mã kiểm tra
+}
+
+// Phản hồi thông tin có được gửi mã kích hoạt
+message SendCodeServerResponse {
+	string code = 2; // Mã kích hoạt
+	StatusCode statusCode = 1000;
+}	
+
+// Phản hồi thông tin kiểm tra mã kích hoạt bằng số điện thoại
+message VerifyCodeServerResponse {
+	string accessToken = 1; // Dùng để đăng nhập cho App
+	StatusCode statusCode = 1000;
+}
+
+/* Tài khoản */
+// Nhận được yêu cầu trả về thông tin người dùng đã đăng nhập
+message GetUserInfoServerRequest {
+}
+
+// Nhận được yêu cầu cập nhật hồ sơ của tài khoản
+message UpdateUserInfoServerRequest {
+	bytes avatar = 1;
+	string fullName = 2;
+	string email = 3;
+	string phoneNumber = 4;
+	bool markedDeleteAvatar = 5; // Đánh dấu khi xóa
+}
+
+// Phản hồi thông tin người dùng
+message GetUserInfoServerResponse {
+	string userId = 1;
+	bytes avatar = 2;
+	string fullName = 3;
+	string email = 4;
+	string phoneNumber = 5;
+	StatusCode statusCode = 1000;
+} 
+
+// Phản hồi thông tin cập nhật hồ sơ của tài khoản
+message UpdateUserInfoServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+/* Nhà */
+// Nhận được yêu cầu trả về danh sách nhà của tài khoản
+message GetHomesServerRequest {
+} 
+
+// Nhận được yêu cầu thêm nhà mới
+message AddHomeServerRequest {
+	string homeName = 1;
+} 
+
+// Nhận được yêu cầu update nhà mới
+message UpdateHomeServerRequest {
+	Home home = 1;
+} 
+
+// Nhận được yêu cầu xóa nhà mới
+message DeleteHomeServerRequest {
+	string homeId = 1;
+} 
+
+// Phản hồi thông tin danh sách nhà cần trả về
+message GetHomesServerResponse {
+	repeated Home homes = 1;
+	StatusCode statusCode = 1000;
+} 
+
+// Phản hồi thông tin thêm nhà mới
+message AddHomeServerResponse {
+	Home home = 1;
+	StatusCode statusCode = 1000;
+} 
+
+// Phản hồi thông tin update nhà mới
+message UpdateHomeServerResponse {
+	StatusCode statusCode = 1000;
+} 
+
+// Phản hồi thông tin xóa nhà mới
+message DeleteHomeServerResponse {
+	StatusCode statusCode = 1000;
+} 
+
+/* Phòng */
+// Nhận được yêu cầu trả về danh sách các phòng
+message GetRoomsServerRequest {
+	string homeId = 1;
+} 
+
+// Nhận được yêu cầu thêm phòng mới
+message AddRoomServerRequest {
+	string homeId = 1;
+	string roomName = 2;
+} 
+
+// Nhận được yêu cầu xóa 1 phòng
+message DeleteRoomServerRequest {
+	string roomId = 1;
+} 
+
+// Phản hồi thông tin danh sách nhà cần trả về
+message GetRoomsServerResponse {
+	repeated Room rooms = 1;
+	StatusCode statusCode = 1000;
+} 
+
+// Phản hồi thông tin thêm phòng mới
+message AddRoomServerResponse {
+	Room room = 1;
+	StatusCode statusCode = 1000;
+} 
+
+// Phản hồi xóa một phòng
+message DeleteRoomServerResponse {
+	StatusCode statusCode = 1000;
+} 
+
+/* Thiết bị kết nối wifi Devices */
+// Nhận được yêu cầu gửi về danh danh thiết bị đã kết nối wifi
+message GetDevicesServerRequest {
+	string homeId = 1;
+}
+
+// Nhận được yêu cầu gửi 1 thiết bị đã kết nối wifi
+message GetDeviceServerRequest {
+	string deviceId = 1;
+}
+
+// Nhận được yêu cầu cập nhật danh sách các thiết bị đến DB server
+message AddDevicesServerRequest {
+	// Thiết bị đã cấu hình rồi thì lần sau sẽ không hiển thị ra nữa nên server sẽ không thực hiện update trong db
+	repeated Device devices = 1;
+}
+
+// Nhận được yêu cầu cập nhật thông tin thiết bị
+message UpdateDeviceServerRequest {
+	Device device = 1;
+}
+
+// Nhận được yêu cầu xóa thiết bị kết nối wifi
+message DeleteDeviceServerRequest {
+	string deviceId = 1; // Id của thiết bị
+}
+
+// Nhận được yêu cầu lấy về url firmware mới nhất
+message GetFirmwareLatestDeviceServerRequest {
+	string model = 1; // Model: "M1", "SW-1TOUCH"
+	string firmware = 2; // Firmware: 1.0.0
+	string deviceToken = 3; // DeviceToken
+}
+
+// Nhận được yêu cầu bắt đầu cập nhật Firmware
+message BeginUpdateFirmwareDeviceServerRequest {
+	string deviceId = 1;
+	string urlDowwnload = 2;
+}
+
+// Phản hồi về danh danh thiết bị đã kết nối wifi
+message GetDevicesServerResponse {
+	repeated Room rooms = 1;
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi 1 thiết bị đã kết nối wifi
+message GetDeviceServerResponse {
+	Device device = 1;
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thông tin sau khi cập nhật danh sách thiết bị
+message AddDevicesServerResponse {
+	repeated Device devices = 1;
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thông tin sau khi cập nhật thiết bị
+message UpdateDeviceServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi xóa thiết bị
+message DeleteDeviceServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi về Firmware mới nhất
+message GetFirmwareLatestDeviceServerResponse {
+	string firmware = 1; // Firmware: 1.0.1
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thông tin bắt đầu cập nhật Firmware mới nhất
+message BeginUpdateFirmwareDeviceServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thông tin phần trăm cập nhật firmware cho tất cả thiết bị runtime
+message ProgressUpdateFirmwareOnChangedDeviceServerResponse {
+	string deviceId = 1; // DeviceId cho việc đồng bộ tài khoản nhiều thiết bị
+	uint32 percent = 2; // DeviceId cho việc đồng bộ tài khoản nhiều thiết bị
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thông tin kết nối của các thiết bị runtime
+message DeviceOnChangedDeviceServerResponse {
+	string deviceId = 1; // DeviceId cho việc đồng bộ tài khoản nhiều thiết bị
+	ConnectionState connectionState = 2; // Offline/Online/Disconect
+	uint32 totalTimeOnOrgin = 3;
+	uint32 totalTimeOnYear = 4;
+	uint32 totalTimeOnMonth = 5;
+	uint32 timeOnLastDate = 6;
+	uint32 timeOffLastDate = 7;
+
+	StatusCode statusCode = 1000;
+}
+
+/* Công tắc */
+//----- Yêu cầu về thông tin công tắc -----//
+// Nhận được yêu cầu gửi thông danh sách công tắc
+message GetSwitchersServerRequest {
+	string deviceId = 1; // Id của deviceId
+}
+
+// Nhận được yêu cầu trả về thông tin của 1 nút công tắc
+message GetSwitcherServerRequest {
+	string switcherId = 1; // Id
+} 
+
+// Nhận được yêu cầu trả về danh sách icons của của công tắc
+message GetIconSwitchersServerRequest {
+} 
+
+// Nhận được yêu cầu trả về nhật ký của 1 công tắc
+message GetLogSwitcherServerRequest {
+	string deviceId = 1; // Id của thiết bị
+	uint32 switcher = 2; // Công tắc 1,2,3,4
+}
+
+// Nhận được yêu cầu cập nhật 1 nút công tắc
+message UpdateSwitcherServerRequest {
+	Switcher switcher = 1;
+}
+
+// Nhận được yêu cầu thay đổi On/Off thiết bị
+message SwitcherServerRequest {
+	string deviceId = 1; // Id của thiết bị
+	uint32 switcher = 2; // Công tắc 1,2,3,4
+	PowerState powerState = 3; // Trạng thái ON/OFF
+}
+
+//----- Yêu cầu về lịch hẹn công tắc -----//
+// Nhận được yêu cầu gửi danh sách lịch hẹn giờ của 1 công tắc
+message GetSwitcherSchedulesServerRequest {
+	string switcherId = 1; // Id của switcher
+}
+
+// Nhận được yêu cầu gửi thông tin chi tiết 1 lịch của 1 công tắc
+message GetSwitcherScheduleServerRequest {
+	string switcherScheduleId = 1; // SwitcherScheduleId
+}
+
+// Nhận được yêu cầu gửi số lượng lịch hẹn giờ của 1 công tắc
+message GetCountSwitcherScheduleServerRequest {
+	string switcherId = 1; // Id của switcher
+}
+
+// Nhận được yêu cầu thêm mới 1 lịch của 1 công tắc
+message AddSwitcherScheduleServerRequest {
+	string deviceId = 1; // Id của thiết bị
+	SwitcherSchedule schedule = 2;
+}
+
+// Nhận được yêu cầu update 1 lịch của 1 công tắc
+message UpdateSwitcherScheduleServerRequest {
+	string deviceId = 1; // Id của thiết bị;
+	SwitcherSchedule schedule = 2;
+}
+
+// Nhận được yêu cầu xóa 1 lịch của 1 công tắc
+message DeleteSwitcherScheduleServerRequest {
+	string deviceId = 1; // Id của thiết bị
+	string switcherScheduleId = 2; // Id của switcherScheduleId
+}
+
+//----- Phản hồi thông tin công tắc -----//
+// Phản hồi danh sách công tắc của 1 thiết bị
+message GetSwitchersServerResponse {
+	repeated Switcher switchers = 1;
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi trả về thông tin của 1 nút công tắc
+message GetSwitcherServerResponse {
+	Switcher switcher = 1;
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi nhật ký/hành trình của 1 công tắc
+message GetLogSwitcherServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi danh sách icons của của công tắc
+message GetIconSwitchersServerResponse {
+	repeated string icons = 1;
+	StatusCode statusCode = 1000;
+} 
+
+// Phản hồi cập nhật 1 nút công tắc
+message UpdateSwitcherServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thay đổi On/Off thiết bị
+message SwitcherServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thông tin thay đổi ON/OFF của công tắc runtime
+message SwitcherOnChangedServerResponse {
+	string deviceId = 1; // Id của thiết bị để mobile update trạng thái
+	uint32 switcher = 2; // Công tắc 1,2,3,4
+	PowerState powerState = 3; // Trạng thái ON/OFF
+	uint32 totalTimeOnOrgin = 4;
+	uint32 totalTimeOnYear = 5;
+	uint32 totalTimeOnMonth = 6;
+	uint32 timeOnLastDate = 7;
+	uint32 timeOffLastDate = 8;
+
+	StatusCode statusCode = 1000;
+}
+
+//----- Phản hồi về lịch hẹn công tắc -----//
+// Phản hồi thông tin danh sách hẹn giờ công tắc
+message GetSwitcherSchedulesServerResponse {
+	repeated SwitcherSchedule schedules = 1;
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thông tin chi tiết 1 lịch của 1 công tắc
+message GetSwitcherScheduleServerResponse {
+	SwitcherSchedule schedule = 1;
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi số lượng lịch hẹn giờ của 1 công tắc
+message GetCountSwitcherScheduleServerResponse {
+	uint32 count = 1; // Id của remote
+}
+
+// Phản hồi thêm mới 1 lịch của 1 công tắc
+message AddSwitcherScheduleServerResponse {
+	string switcherScheduleId = 1;
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi update 1 lịch của 1 công tắc
+message UpdateSwitcherScheduleServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi xóa 1 lịch của 1 công tắc
+message DeleteSwitcherScheduleServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+/* Rèm cửa */
+//----- Yêu cầu thông tin rèm cửa -----//
+// Nhận được yêu cầu trả về thông tin của rèm cửa
+message GetCurtainSwitcherServerRequest {
+	string curtainSwitcherId = 1; // Id
+} 
+
+// Nhận được yêu cầu cập nhật rèm cửa
+message UpdateCurtainSwitcherServerRequest {
+	CurtainSwitcher curtainSwitcher = 1;
+}
+
+// Nhận được yêu cầu trả về state của rèm cửa
+message GetCurtainSwitcherStateServerRequest {
+	string deviceId = 1; // deviceId để lấy trạng thái điều hòa ở session trên server HZ
+} 
+
+// Nhận được lệnh điều khiển rèm cửa
+message CurtainSwitcherServerRequest {
+	string deviceId = 1;
+	uint32 percentIn = 2; // Phần trăm hướng trong
+	uint32 percentOut = 3; // Phần trăm hướng ngoài
+}
+
+//----- Yêu cầu về lịch hẹn rèm cửa -----//
+// Nhận được yêu cầu gửi danh sách lịch hẹn giờ của rèm cửa
+message GetCurtainSwitcherSchedulesServerRequest {
+	string curtainSwitcherId = 1; // Id của rèm cửa
+}
+
+// Nhận được yêu cầu gửi thông tin chi tiết 1 lịch hẹn giờ của rèm cửa
+message GetCurtainSwitcherScheduleServerRequest {
+	string curtainSwitcherScheduleId = 1; // curtainSwitcherScheduleId của rèm cửa
+}
+
+// Nhận được yêu cầu gửi số lượng lịch hẹn giờ của rèm cửa
+message GetCountCurtainSwitcherScheduleServerRequest {
+	string curtainSwitcherId = 1; // Id của rèm cửa
+}
+
+// Nhận được yêu cầu thêm mới 1 lịch của rèm cửa
+message AddCurtainSwitcherScheduleServerRequest {
+	string deviceId = 1; // Id của thiết bị
+	CurtainSwitcherSchedule schedule = 2;
+}
+
+// Nhận được yêu cầu update 1 lịch của rèm cửa
+message UpdateCurtainSwitcherScheduleServerRequest {
+	string deviceId = 1; // Id của thiết bị;
+	CurtainSwitcherSchedule schedule = 2;
+}
+
+// Nhận được yêu cầu xóa 1 lịch của rèm cửa
+message DeleteCurtainSwitcherScheduleServerRequest {
+	string deviceId = 1; // Id của thiết bị
+	string curtainSwitcherScheduleId = 2; // Id của curtainSwitcherScheduleId
+}
+
+//----- Phản hồi thông tin rèm cửa -----//
+// Phản hồi trả về thông tin rèm cửa
+message GetCurtainSwitcherServerResponse {
+	CurtainSwitcher curtainSwitcher = 1;
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi cập nhật thông tin rèm cửa
+message UpdateCurtainSwitcherServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thông tin state của rèm cửa
+message GetCurtainSwitcherStateServerResponse {
+	uint32 percentIn = 1; // Phần trăm hướng trong
+	uint32 percentOut = 2; // Phần trăm hướng ngoài
+	StatusCode statusCode = 1000;
+} 
+
+// Phản hồi lệnh điều khiển rèm cửa
+message CurtainSwitcherServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi trạng thái rèm cửa runtime
+message CurtainSwitcherOnChangedServerResponse {
+	string deviceId = 1; // Id của thiết bị để mobile update trạng thái
+	uint32 percentIn = 2; // Phần trăm hướng trong
+	uint32 percentOut = 3; // Phần trăm hướng ngoài
+	StatusCode statusCode = 1000;
+}
+
+//----- Phản hồi về lịch hẹn rèm cửa -----//
+// Phản hồi thông tin danh sách hẹn giờ rèm cửa
+message GetCurtainSwitcherSchedulesServerResponse {
+	repeated CurtainSwitcherSchedule schedules = 1;
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi số lượng lịch hẹn giờ của rèm cửa
+message GetCountCurtainSwitcherScheduleServerResponse {
+	uint32 count = 1; // Id của rèm cửa
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thông tin chi tiết 1 lịch của rèm cửa
+message GetCurtainSwitcherScheduleServerResponse {
+	CurtainSwitcherSchedule schedule = 1;
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thêm mới 1 lịch của rèm cửa
+message AddCurtainSwitcherScheduleServerResponse {
+	string curtainSwitcherScheduleId = 1;
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi update 1 lịch của rèm cửa
+message UpdateCurtainSwitcherScheduleServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi xóa 1 lịch của rèm cửa
+message DeleteCurtainSwitcherScheduleServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+/* Đồng hồ điện/nước */
+// Nhận được yêu cầu trả về thông tin của đồng hồ điện/nước
+message GetMeterServerRequest {
+	string meterId = 1; // Id của thiết bị điện/nước
+	TypeMeter type = 2; // Là điện or nước
+	DateTime date = 3; // Tra cứu theo ngày
+}
+
+// Phản hồi thông tin của đồng hồ điện/nước
+message GetMeterServerResponse {
+	Meter meter = 1; // Chi tiết của đồng hồ điện/nước
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thông tin thay đổi các chỉ số của thiết bị điện/nước runtime
+message MeterOnChangedServerResponse {
+	string deviceId = 1; // Id của thiết bị để đồng bộ dữ liệu cho 1 tài khoản
+	Meter meter = 2; // Meter
+	StatusCode statusCode = 1000;
+}
+
+/* Điều hòa */
+// Nhận được yêu cầu trả về state của điều hòa
+message GetAirConditionerStateServerRequest {
+	string deviceId = 1; // deviceId để lấy trạng thái điều hòa ở session trên server HZ
+} 
+
+// Phản hồi thông tin state của điều hòa
+message GetAirConditionerStateServerResponse {
+	AirConditionerState state = 1;
+	StatusCode statusCode = 1000;
+} 
+
+// Nhận được yêu cầu điều khiển điều hòa
+message AirConditionerServerRequest {
+	string deviceId = 1;
+	AirConditionerState state = 2;
+} 
+
+// Phản hồi thông tin điều khiển điều hòa
+message AirConditionerServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi state của điều hòa runtime
+message AirConditionerOnChangedServerResponse {
+	string deviceId = 1; // Id của thiết bị để mobile update trạng thái
+	AirConditionerState state = 2;
+	StatusCode statusCode = 1000;
+}
+
+/* Remote chung cho tất cả thiết bị Remote */
+//----- Yêu cầu thông tin của remote -----//
+// Nhận được yêu cầu trả về  danh sách các remote
+message GetRemotesServerRequest {
+	string homeId = 1; // HomeId
+	GroupDevice group = 2; // Nhóm thiết bị
+} 
+
+// Nhận được yêu cầu trả về thông tin chi tiết của remote
+message GetRemoteServerRequest {
+	string remoteId = 1; // Id của remote
+	string homeId = 2; // HomeId để trả về danh sách thiết bị IRRF trong căn hộ
+} 
+
+// Nhận được yêu cầu trả về danh sách các remote library
+message GetRemoteLibrariesServerRequest {
+	string search = 1;
+	string last_name = 2;
+	uint32 size = 3;
+} 
+
+// Nhận được yêu cầu trả về các nút lệnh remote
+message GetCommandsRemoteServerRequest {
+	string remoteId = 1; // Dùng cho đa năng
+	string remoteLibraryId = 2; // Dùng cho đơn năng
+} 
+
+// Nhận được yêu cầu thực hiện lệnh remote
+message SendCommandRemoteServerRequest {
+	string deviceId = 1; // Id của deviceId
+	string remoteId = 2; // Id của remote dùng cho thư viện có sẵn
+	string remoteLibraryCmdId = 3; // Dùng cho thư viện có sẵn
+	string remoteMultiLibraryCmdId = 4; // Id của lệnh từ remote đa năng
+}
+
+// Nhận được yêu cầu học lệnh remote
+message LearnCommandRemoteServerRequest {
+	string deviceId = 1; // Id của thiết bị cần học lệnh
+	string remoteId = 2; // Id của remote
+	string remoteLibraryCmdId = 3; // Id của lệnh từ thư viện
+	string remoteMultiLibraryCmdId = 4; // Id của lệnh từ remote đa năng
+}
+
+// Nhận được yêu cầu khôi phục lệnh mặc định
+message RestoreCommandRemoteServerRequest {
+	string remoteId = 1; // Id của remote
+	string remoteLibraryCmdId = 2; // Id của lệnh 
+	string remoteMultiLibraryCmdId = 3; // Id của lệnh từ remote đa năng
+}
+
+// Nhận được yêu cầu thêm mới 1 remote
+message AddRemoteServerRequest {
+	Remote remote = 1;
+}
+
+// Nhận được yêu cầu update 1 remote
+message UpdateRemoteServerRequest {
+	Remote remote = 1;
+}
+
+// Nhận được yêu cầu xóa 1 remote
+message DeleteRemoteServerRequest {
+	string remoteId = 1; // Id của remote
+}
+
+//----- Yêu cầu remote đa năng -----//
+// Nhận được yêu cầu gửi danh sách remote đa năng
+message GetRemoteMultisServerRequest {
+	string remoteId = 1; // Id của remote
+}
+
+// Nhận được yêu cầu thêm mới remote đa năng
+message AddRemoteMultiServerRequest {
+	RemoteMulti remoteMulti = 1;
+}
+
+// Nhận được yêu cầu xóa remote đa năng
+message DeleteRemoteMultiServerRequest {
+	string id = 1; // Id
+}
+
+// Nhận được yêu cầu thêm nút lệnh cho remote đa năng
+message AddRemoteMultiLibraryCmdServerRequest {
+	RemoteMultiLibraryCmd remoteMultiLibraryCmd = 1;
+}
+
+// Nhận được yêu cầu xóa nút lệnh đa năng
+message DeleteRemoteMultiLibraryCmdServerRequest {
+	string id = 1; // Id
+}
+
+//----- Yêu cầu hẹn giờ của remote -----//
+// Nhận được yêu cầu gửi danh sách lịch hẹn giờ của 1 remote
+message GetScheduleRemotesServerRequest {
+	string remoteId = 1; // Id của remote
+}
+
+// Nhận được yêu cầu gửi số lượng lịch hẹn giờ của 1 remote
+message GetCountScheduleRemoteServerRequest {
+	string remoteId = 1; // Id của remote
+}
+
+// Nhận được yêu cầu gửi thông tin chi tiết 1 lịch của 1 remote
+message GetScheduleRemoteServerRequest {
+	string remoteScheduleId = 1; // Id của remoteScheduleId
+	GroupRemote group = 2; // Nhóm remote
+}
+
+// Nhận được yêu cầu thêm mới 1 lịch của 1 remote
+message AddScheduleRemoteServerRequest {
+	RemoteSchedule schedule = 1;
+}
+
+// Nhận được yêu cầu update 1 lịch của 1 remote
+message UpdateScheduleRemoteServerRequest {
+	RemoteSchedule schedule = 1;
+}
+
+// Nhận được yêu cầu xóa 1 lịch của 1 remote
+message DeleteScheduleRemoteServerRequest {
+	string remoteScheduleId = 1; // Id của remoteScheduleId
+}
+
+//----- Phản hồi của remote -----//
+// Phản hồi thông tin danh sách các remote
+message GetRemotesServerResponse {
+	repeated Remote remotes = 1;
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thông tin chi tiết của remote
+message GetRemoteServerResponse {
+	Remote remote = 1; // Remote
+	repeated Device Devices = 2; // Danh sách các thiết bị thu phát trong tòa nhà
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thông tin về danh sách các remote library
+message GetRemoteLibrariesServerResponse {
+	repeated RemoteLibrary libraries = 1;
+	StatusCode statusCode = 1000;
+} 
+
+// Phản hồi thông tin danh sách các nút điều khiển
+message GetCommandsRemoteServerResponse {
+	repeated RemoteCommand commands = 1;
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thông tin sau khi thực hiện lệnh remote
+message SendCommandRemoteServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thông tin sau khi yêu cầu học lệnh remote kết thúc
+message LearnCommandRemoteServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi sau khôi phục lệnh mặc định
+message RestoreCommandRemoteServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thông tin thêm mới 1 remote
+message AddRemoteServerResponse {
+	Remote remote = 1;
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thông tin update 1 remote
+message UpdateRemoteServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thông tin xóa 1 remote
+message DeleteRemoteServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thông tin sau khi thực hiện lệnh remote/runtime nhưng chỉ có 1 chiều
+message RemoteOnChangedServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+//----- Phản hồi remote đa năng -----//
+// Phản hồi thông tin danh sách remote đa năng
+message GetRemoteMultisServerResponse {
+	repeated RemoteMulti remoteMultis = 1;
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thêm mới remote đa năng
+message AddRemoteMultiServerResponse {
+	RemoteMulti remoteMulti = 1;
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi xóa remote đa năng
+message DeleteRemoteMultiServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thêm nút lệnh cho remote đa năng
+message AddRemoteMultiLibraryCmdServerResponse {
+	RemoteMultiLibraryCmd remoteMultiLibraryCmd = 1;
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi xóa nút lệnh đa năng
+message DeleteRemoteMultiLibraryCmdServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+//----- Phản hồi hẹn giờ remote -----//
+// Phản hồi thông tin danh sách hẹn giờ remote
+message GetScheduleRemotesServerResponse {
+	repeated RemoteSchedule schedules = 1;
+	StatusCode statusCode = 1000;
+}
+
+// Nhận được yêu cầu gửi số lượng lịch hẹn giờ của 1 remote
+message GetCountScheduleRemoteServerResponse {
+	uint32 count = 1;
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thông tin chi tiết 1 lịch của 1 remote
+message GetScheduleRemoteServerResponse {
+	RemoteSchedule schedule = 1;
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thêm mới 1 lịch của 1 remote
+message AddScheduleRemoteServerResponse {
+	string remoteScheduleId = 1;
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi update 1 lịch của 1 remote
+message UpdateScheduleRemoteServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi xóa 1 lịch của 1 remote
+message DeleteScheduleRemoteServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+/* Kịch bản */
+//----- Yêu cầu kịch bản -----//
+// Nhận được yêu cầu gửi danh sách kịch bản
+message GetScenesServerRequest {
+	string homeId = 1; // Id của home
+}
+
+// Nhận được yêu cầu gửi thông tin chi tiết 1 kịch bản
+message GetSceneServerRequest {
+	string sceneId = 1; // Id của Scene
+}
+
+// Nhận được yêu cầu thêm mới 1 kịch bản
+message AddSceneServerRequest {
+	Scene scene = 1;
+}
+
+// Nhận được yêu cầu update 1 kịch bản
+message UpdateSceneServerRequest {
+	Scene scene = 1;
+}
+
+// Nhận được yêu cầu xóa 1 kịch bản
+message DeleteSceneServerRequest {
+	string sceneId = 1; // Id của Scene
+}
+
+// Nhận yêu cầu xóa điều kiện kịch bản
+message DeleteSwitcherConditionServerRequest {
+	string sceneId = 1; // Id của Scene
+}
+
+// Nhận yêu cầu xóa một thực thi kịch bản
+message DeleteSceneActionServerRequest {
+	string sceneActionId = 1; // Id
+}
+
+// Nhận yêu cầu chạy kịch bản
+message RunSceneServerRequest {
+	string sceneId = 1; // sceneId
+}
+
+//----- Phản hồi kịch bản -----//
+// Phản hồi thông tin danh sách các kịch bản
+message GetScenesServerResponse {
+	repeated Scene scenes = 1;
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thông tin chi tiết của 1 kịch bản
+message GetSceneServerResponse {
+	Scene scene = 1;
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thông tin thêm mới 1 kịch bản
+message AddSceneServerResponse {
+	Scene scene = 1;
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thông tin update 1 kịch bản
+message UpdateSceneServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi thông tin xóa 1 kịch bản
+message DeleteSceneServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi yêu cầu xóa điều kiện kịch bản
+message DeleteSwitcherConditionServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi yêu cầu xóa một thực thi kịch bản
+message DeleteSceneActionServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+// Phản hồi chạy kịch bản
+message RunSceneServerResponse {
+	StatusCode statusCode = 1000;
+}
+
+/* Các màn hình tổng hợp, sử dụng chung, phức tạp */
+//----- Home -----//
+// Nhận được yêu cầu trả về màn hình trang chủ
+message GetHomeTabServerRequest {	
+	string homeId = 1; // Id của nhà
+} 
+
+// Phản hồi trả về màn hình trang chủ
+message GetHomeTabServerResponse {
+	// Trạng thái công tắc
+	repeated Switcher statusSwitchers = 1;
+
+	// Kịch bản
+	repeated Scene scenes = 2;
+	
+	// Yêu thích
+	repeated Switcher favoriteSwitchers = 3;
+	repeated CurtainSwitcher favoriteCurtainSwitchers = 4;
+	repeated Remote favoriteRemotes = 5;
+	repeated Meter meter = 6; // Đồng hồ điện/nước
+
+	StatusCode statusCode = 1000;
+}
+
+//----- Thiết bị điện trong nhà, nhóm theo phòng -----//
+// Nhận được yêu cầu trả về màn hình thiết bị điện
+message GetElectricTabServerRequest {
+	string homeId = 1; // Id của nhà
+} 
+
+// Phản hồi trả về màn hình thiết bị điện
+message GetElectricTabServerResponse {
+	repeated Room rooms = 1;
+	StatusCode statusCode = 1000;
+}
+
+//----- Công tắc trong nhà, nhóm theo phòng, xem như như là màn hình tổng hợp -----//
+// Nhận được yêu cầu trả về toàn bộ công tắc trong nhà, nhóm theo phòng
+message GetSwitcherTabServerRequest {
+	string homeId = 1; // Id của nhà
+} 
+
+// Phản hồi yêu cầu trả về toàn bộ công tắc trong nhà, nhóm theo phòng
+message GetSwitcherTabServerResponse {
+	repeated Room rooms = 1;
+	StatusCode statusCode = 1000;
+}
+
+/***** Đóng gói ServerMessage *****/
+/* Auth Message Server */
+message AuthServerMessage {
+	/* Đăng nhập hệ thống */
+	LoginServerRequest loginServerRequest = 1;
+	LoginServerResponse loginServerResponse = 2;
+
+	/* RefreshToken */
+	RefreshTokenServerRequest refreshTokenServerRequest = 3;
+	RefreshTokenServerResponse refreshTokenServerResponse = 4;
+
+	/* Gửi mã kích hoạt */
+	SendCodeServerRequest sendCodeServerRequest = 5;
+	SendCodeServerResponse sendCodeServerResponse = 6;
+
+	/* Kiểm tra mã kích hoạt */
+	VerifyCodeServerRequest verifyCodeServerRequest = 7;
+	VerifyCodeServerResponse verifyCodeServerResponse = 8;
+}
+
+/* Tài khoản */
+message UserServerMessage {
+	GetUserInfoServerRequest getUserInfoServerRequest = 1;
+	GetUserInfoServerResponse getUserInfoServerResponse = 2;
+	
+	UpdateUserInfoServerRequest updateUserInfoServerRequest = 3;
+	UpdateUserInfoServerResponse updateUserInfoServerResponse = 4;
+}
+
+/* Nhà */
+message HomeServerMessage {
+	GetHomesServerRequest getHomesServerRequest = 1;
+	GetHomesServerResponse getHomesServerResponse = 2;
+	
+	AddHomeServerRequest addHomeServerRequest = 3;
+	AddHomeServerResponse addHomeServerResponse = 4;
+
+	UpdateHomeServerRequest updateHomeServerRequest = 5;
+	UpdateHomeServerResponse updateHomeServerResponse = 6;
+	
+	DeleteHomeServerRequest deleteHomeServerRequest = 7;
+	DeleteHomeServerResponse deleteHomeServerResponse = 8;
+}
+
+/* Phòng */
+message RoomServerMessage {
+	GetRoomsServerRequest getRoomsServerRequest = 1;
+	GetRoomsServerResponse getRoomsServerResponse = 2;
+
+	AddRoomServerRequest addRoomServerRequest = 3;
+	AddRoomServerResponse addRoomServerResponse = 4;
+
+	DeleteRoomServerRequest deleteRoomServerRequest = 5;
+	DeleteRoomServerResponse deleteRoomServerResponse = 6;
+}
+
+/* Thiết bị kết nối wifi Devices */
+message DeviceServerMessage {
+	GetDevicesServerRequest getDevicesServerRequest = 1;
+	GetDevicesServerResponse getDevicesServerResponse = 2;
+
+	GetDeviceServerRequest getDeviceServerRequest = 3;
+	GetDeviceServerResponse getDeviceServerResponse = 4;
+
+	AddDevicesServerRequest addDevicesServerRequest = 5;
+	AddDevicesServerResponse addDevicesServerResponse = 6;
+
+	UpdateDeviceServerRequest updateDeviceServerRequest = 7;
+	UpdateDeviceServerResponse updateDeviceServerResponse = 8;
+
+	DeleteDeviceServerRequest deleteDeviceServerRequest = 9;
+	DeleteDeviceServerResponse deleteDeviceServerResponse = 10;
+	
+	GetFirmwareLatestDeviceServerRequest getFirmwareLatestDeviceServerRequest = 11;
+	GetFirmwareLatestDeviceServerResponse getFirmwareLatestDeviceServerResponse = 12;
+
+	BeginUpdateFirmwareDeviceServerRequest beginUpdateFirmwareDeviceServerRequest = 13;
+	BeginUpdateFirmwareDeviceServerResponse beginUpdateFirmwareDeviceServerResponse = 14;
+}
+
+/* Công tắc */
+message SwitcherServerMessage {
+	GetSwitchersServerRequest getSwitchersServerRequest = 1;
+	GetSwitchersServerResponse getSwitchersServerResponse = 2;
+	
+	GetSwitcherServerRequest getSwitcherServerRequest = 3;
+	GetSwitcherServerResponse getSwitcherServerResponse = 4;
+	
+	GetLogSwitcherServerRequest getLogSwitcherServerRequest = 5;
+	GetLogSwitcherServerResponse getLogSwitcherServerResponse = 6;
+
+	GetIconSwitchersServerRequest getIconSwitchersServerRequest = 7;
+	GetIconSwitchersServerResponse getIconSwitchersServerResponse = 8;
+
+	UpdateSwitcherServerRequest updateSwitcherServerRequest = 9;
+	UpdateSwitcherServerResponse updateSwitcherServerResponse = 10;
+	
+	SwitcherServerRequest switcherServerRequest = 11;
+	SwitcherServerResponse switcherServerResponse = 12;
+
+	GetSwitcherSchedulesServerRequest getSwitcherSchedulesServerRequest = 13;
+	GetSwitcherSchedulesServerResponse getSwitcherSchedulesServerResponse = 14;
+
+	GetSwitcherScheduleServerRequest getSwitcherScheduleServerRequest = 15;
+	GetSwitcherScheduleServerResponse getSwitcherScheduleServerResponse = 16;
+
+	GetCountSwitcherScheduleServerRequest getCountSwitcherScheduleServerRequest = 17;
+	GetCountSwitcherScheduleServerResponse getCountSwitcherScheduleServerResponse = 18;
+
+	AddSwitcherScheduleServerRequest addSwitcherScheduleServerRequest = 19;
+	AddSwitcherScheduleServerResponse addSwitcherScheduleServerResponse = 20;
+
+	UpdateSwitcherScheduleServerRequest updateSwitcherScheduleServerRequest = 21;
+	UpdateSwitcherScheduleServerResponse updateSwitcherScheduleServerResponse = 22;
+
+	DeleteSwitcherScheduleServerRequest deleteSwitcherScheduleServerRequest = 23;
+	DeleteSwitcherScheduleServerResponse deleteSwitcherScheduleServerResponse = 24;
+}
+
+/* Rèm cửa */
+message CurtainSwitcherServerMessage {
+	GetCurtainSwitcherServerRequest getCurtainSwitcherServerRequest = 1;
+	GetCurtainSwitcherServerResponse getCurtainSwitcherServerResponse = 2;
+	
+	UpdateCurtainSwitcherServerRequest updateCurtainSwitcherServerRequest = 3;
+	UpdateCurtainSwitcherServerResponse updateCurtainSwitcherServerResponse = 4;
+
+	GetCurtainSwitcherStateServerRequest getCurtainSwitcherStateServerRequest = 5;
+	GetCurtainSwitcherStateServerResponse getCurtainSwitcherStateServerResponse = 6;
+
+	CurtainSwitcherServerRequest curtainSwitcherServerRequest = 7;
+	CurtainSwitcherServerResponse curtainSwitcherServerResponse = 8;
+
+	GetCurtainSwitcherSchedulesServerRequest getCurtainSwitcherSchedulesServerRequest = 9;
+	GetCurtainSwitcherSchedulesServerResponse getCurtainSwitcherSchedulesServerResponse = 10;
+
+	GetCurtainSwitcherScheduleServerRequest getCurtainSwitcherScheduleServerRequest = 11;
+	GetCurtainSwitcherScheduleServerResponse getCurtainSwitcherScheduleServerResponse = 12;
+
+	GetCountCurtainSwitcherScheduleServerRequest getCountCurtainSwitcherScheduleServerRequest = 13;
+	GetCountCurtainSwitcherScheduleServerResponse getCountCurtainSwitcherScheduleServerResponse = 14;
+
+	AddCurtainSwitcherScheduleServerRequest addCurtainSwitcherScheduleServerRequest = 15;
+	AddCurtainSwitcherScheduleServerResponse addCurtainSwitcherScheduleServerResponse = 16;
+
+	UpdateCurtainSwitcherScheduleServerRequest updateCurtainSwitcherScheduleServerRequest = 17;
+	UpdateCurtainSwitcherScheduleServerResponse updateCurtainSwitcherScheduleServerResponse = 18;
+
+	DeleteCurtainSwitcherScheduleServerRequest deleteCurtainSwitcherScheduleServerRequest = 19;
+	DeleteCurtainSwitcherScheduleServerResponse deleteCurtainSwitcherScheduleServerResponse = 20;
+}
+
+/* Đồng hồ điện/nước */
+message MeterServerMessage {
+	GetMeterServerRequest getMeterServerRequest = 1;
+	GetMeterServerResponse getMeterServerResponse = 2;
+}
+
+/* Điều hòa */
+message AirConditionerServerMessage {
+	GetAirConditionerStateServerRequest getAirConditionerStateServerRequest = 1;
+	GetAirConditionerStateServerResponse getAirConditionerStateServerResponse = 2;
+
+	AirConditionerServerRequest airConditionerServerRequest = 3;
+	AirConditionerServerResponse airConditionerServerResponse = 4;
+}
+
+/* Remote các lệnh chung */
+message RemoteServerMessage {
+	GetRemotesServerRequest getRemotesServerRequest = 1;
+	GetRemotesServerResponse getRemotesServerResponse = 2;
+
+	GetRemoteServerRequest getRemoteServerRequest = 3;
+	GetRemoteServerResponse getRemoteServerResponse = 4;
+
+	GetRemoteLibrariesServerRequest getRemoteLibrariesServerRequest = 5;
+	GetRemoteLibrariesServerResponse getRemoteLibrariesServerResponse = 6;
+
+	GetCommandsRemoteServerRequest getCommandsRemoteServerRequest = 7;
+	GetCommandsRemoteServerResponse getCommandsRemoteServerResponse = 8;
+
+	SendCommandRemoteServerRequest sendCommandRemoteServerRequest = 9;
+	SendCommandRemoteServerResponse sendCommandRemoteServerResponse = 10;
+
+	LearnCommandRemoteServerRequest learnCommandRemoteServerRequest = 11;
+	LearnCommandRemoteServerResponse learnCommandRemoteServerResponse = 12;
+
+	RestoreCommandRemoteServerRequest restoreCommandRemoteServerRequest = 13;
+	RestoreCommandRemoteServerResponse restoreCommandRemoteServerResponse = 14;
+
+	AddRemoteServerRequest addRemoteServerRequest = 15;
+	AddRemoteServerResponse addRemoteServerResponse = 16;
+
+	UpdateRemoteServerRequest updateRemoteServerRequest = 17;
+	UpdateRemoteServerResponse updateRemoteServerResponse = 18;
+
+	DeleteRemoteServerRequest deleteRemoteServerRequest = 19;
+	DeleteRemoteServerResponse deleteRemoteServerResponse = 20;
+
+	GetScheduleRemotesServerRequest getScheduleRemotesServerRequest = 21;
+	GetScheduleRemotesServerResponse getScheduleRemotesServerResponse = 22;
+
+	GetCountScheduleRemoteServerRequest getCountScheduleRemoteServerRequest = 23;
+	GetCountScheduleRemoteServerResponse getCountScheduleRemoteServerResponse = 24;
+
+	GetScheduleRemoteServerRequest detScheduleRemoteServerRequest = 25;
+	GetScheduleRemoteServerResponse getScheduleRemoteServerResponse = 26;
+
+	AddScheduleRemoteServerRequest addScheduleRemoteServerRequest = 27;
+	AddScheduleRemoteServerResponse addScheduleRemoteServerResponse = 28;
+
+	UpdateScheduleRemoteServerRequest updateScheduleRemoteServerRequest = 29;
+	UpdateScheduleRemoteServerResponse updateScheduleRemoteServerResponse = 30;
+
+	DeleteScheduleRemoteServerRequest deleteScheduleRemoteServerRequest = 31;
+	DeleteScheduleRemoteServerResponse deleteScheduleRemoteServerResponse = 32;
+
+	GetRemoteMultisServerRequest getRemoteMultisServerRequest = 33;
+	GetRemoteMultisServerResponse getRemoteMultisServerResponse = 34;
+
+	AddRemoteMultiServerRequest addRemoteMultiServerRequest = 35;
+	AddRemoteMultiServerResponse addRemoteMultiServerResponse = 36;
+
+	DeleteRemoteMultiServerRequest deleteRemoteMultiServerRequest = 37;
+	DeleteRemoteMultiServerResponse deleteRemoteMultiServerResponse = 38;
+
+	AddRemoteMultiLibraryCmdServerRequest addRemoteMultiLibraryCmdServerRequest = 39;
+	AddRemoteMultiLibraryCmdServerResponse addRemoteMultiLibraryCmdServerResponse = 40;
+
+	DeleteRemoteMultiLibraryCmdServerRequest deleteRemoteMultiLibraryCmdServerRequest = 41;
+	DeleteRemoteMultiLibraryCmdServerResponse deleteRemoteMultiLibraryCmdServerResponse = 42;
+}
+
+/* Kịch bản */
+message SceneServerMessage {
+	GetScenesServerRequest getScenesServerRequest = 1;
+	GetScenesServerResponse getScenesServerResponse = 2;
+
+	GetSceneServerRequest getSceneServerRequest = 3;
+	GetSceneServerResponse getSceneServerResponse = 4;
+
+	AddSceneServerRequest addSceneServerRequest = 5;
+	AddSceneServerResponse addSceneServerResponse = 6;
+
+	UpdateSceneServerRequest updateSceneServerRequest = 7;
+	UpdateSceneServerResponse updateSceneServerResponse = 8;
+
+	DeleteSceneServerRequest deleteSceneServerRequest = 9;
+	DeleteSceneServerResponse deleteSceneServerResponse = 10;
+
+	DeleteSwitcherConditionServerRequest deleteSwitcherConditionServerRequest = 11;
+	DeleteSwitcherConditionServerResponse deleteSwitcherConditionServerResponse = 12;
+
+	DeleteSceneActionServerRequest deleteSceneActionServerRequest = 13;
+	DeleteSceneActionServerResponse deleteSceneActionServerResponse = 14;
+
+	RunSceneServerRequest runSceneServerRequest = 15;
+	RunSceneServerResponse runSceneServerResponse = 16;
+}
+
+/* Các màn hình tổng hợp */
+message GeneralTabServerMessage {
+	GetHomeTabServerRequest getHomeTabServerRequest = 1;
+	GetHomeTabServerResponse getHomeTabServerResponse = 2;
+
+	GetElectricTabServerRequest getElectricTabServerRequest = 3;
+	GetElectricTabServerResponse getElectricTabServerResponse = 4;
+
+	GetSwitcherTabServerRequest getSwitcherTabServerRequest = 5;
+	GetSwitcherTabServerResponse getSwitcherTabServerResponse = 6;
+}
+
+/* Events runtime */
+message OnChangedServerMessage {
+	SwitcherOnChangedServerResponse switcherOnChangedServerResponse = 1; // Công tắc thay đổi On/Off
+	CurtainSwitcherOnChangedServerResponse curtainSwitcherOnChangedServerResponse = 2; // Rèm cửa
+	AirConditionerOnChangedServerResponse airConditionerOnChangedServerResponse = 3; // Điều hòa thay đổi trạng thái điều khiển State
+	RemoteOnChangedServerResponse remoteOnChangedServerResponse = 4; // Remote chung để phản hồi kết quả thực hiện lệnh thành công hay thất bị, ngoại lệ
+	MeterOnChangedServerResponse meterOnChangedServerResponse = 5; // Đồng hồ điện/nước thay đổi
+	DeviceOnChangedDeviceServerResponse deviceOnChangedDeviceServerResponse = 6; // Thiết bị thay đổi kết nối
+	ProgressUpdateFirmwareOnChangedDeviceServerResponse progressUpdateFirmwareOnChangedDeviceServerResponse = 7; // Thiết bị cập nhật tiến độ xử lý
+}
+
+/* Server Message */
+message ServerMessage {
+	/* AuthMessage */
+	AuthServerMessage authServerMessage = 1;
+
+	/* Tài khoản */
+	UserServerMessage userServerMessage = 2;
+
+	/* Nhà */
+	HomeServerMessage homeServerMessage = 3;
+
+	/* Phòng */
+	RoomServerMessage roomServerMessage = 4;
+
+	/* Thiết bị kết nối wifi Devices */
+	DeviceServerMessage deviceServerMessage = 5;
+	
+	/* Công tắc */
+	SwitcherServerMessage switcherServerMessage = 6;
+	
+	/* Rèm cửa */
+	CurtainSwitcherServerMessage curtainSwitcherServerMessage = 7;
+
+	/* Điện nước */
+	MeterServerMessage meterServerMessage = 8;
+
+	/* Điều hòa */
+	AirConditionerServerMessage airConditionerServerMessage = 9;
+
+	/* Remote chung cho tất cả thiết bị Remote */
+	RemoteServerMessage remoteServerMessage = 10;
+
+	/* Kịch bản */
+	SceneServerMessage sceneServerMessage = 11;
+
+	/* Các màn hình tổng hợp */
+	GeneralTabServerMessage generalTabServerMessage = 12;
+
+	/* Events runtime */
+	OnChangedServerMessage onChangedServerMessage = 13;
+}
+
+
+
+

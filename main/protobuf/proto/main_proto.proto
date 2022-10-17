@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+import "user_proto.proto";
+import "device_proto.proto";
+
+option java_package = "vn.toright.server.proto";
+
+message MainMessage {
+  UserMessage userMessage = 1;
+  DeviceMessage deviceMessage = 2;
+}

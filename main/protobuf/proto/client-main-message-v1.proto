@@ -1,0 +1,135 @@
+// Sử dụng proto3
+syntax = "proto3";
+
+/***** Import messages *****/
+option java_package = "com.sunshine.smarthome.server.message.protobuf";
+option java_outer_classname = "MainBuf";
+import "common-message-v1.proto";
+import "client-message-v1.proto";
+import "mesh-message-v1.proto";
+
+/***** Messages Server *****/
+/* Auth */
+// Nhận được yêu cầu đăng nhập từ App hoặc Client
+message LoginServerRequest {
+	string accessToken = 1; // Dùng để đăng nhập cho App
+	string facebookToken = 2; // Dùng để đăng nhập cho App
+	string googleToken = 3; // Dùng để đăng nhập cho App
+	string accessKey = 4; // Dùng để đăng nhập cho Client
+	string deviceId = 5; // DeviceId của thiết bị
+	string loggedOS = 6; // Hệ điều hành đăng nhập
+	string versionOS = 7; // Phiên bản hệ điều hành
+	string loggedIP = 8; // Ip đăng nhập
+	string mdns = 9; // Domain thiết bị
+	string brandName = 10; // BrandnName
+	string model = 11; // Model
+	uint32 signal = 12; // Tín hiệu sóng, Lưu trên server?
+	string firmware = 13; // Firmware
+	string hardware = 14; // Hardware
+	GroupDevice group = 15; // Nhóm thiết bị công tắc, rèm cửa...
+	string hardwareId = 16; // hardwareId
+	string deviceToken = 17; // deviceToken
+	string gatewayId = 18; // gatewayId of root
+	uint32 updateMode = 19; // Chế độ update của thiết bị
+	uint32 reactivity = 20; // Độ nhạy của thiết bị
+	uint32 brightness = 21; // Độ sáng của thiết bị
+	uint32 timeDelay = 22; // Thời gian chờ để tắt PIR
+	uint32 enableDoubleTap = 23; // Tính năng double tap cho touch
+}
+
+// Phản hồi thông tin đăng nhập cho App hoặc Client
+message LoginServerResponse {
+	string userId = 1;
+	string deviceId = 2;
+	string accessToken = 3;
+	string refreshToken = 4;
+	string accessKey = 5;
+	string serverDomain = 6; // IP hoặc Domain Websocket
+	Home home = 7; // Tên của ngôi nhà
+	uint32 keepAlive = 8; // keepalive
+	repeated string serialNumbers = 9; // Danh sách serialNumbers trả về cho thiết bị, để thiết bị đọc công tơ điện/nước
+	string hardwareId = 10; // hardwareId
+	uint64 loggedDate = 11; // Ngày đăng nhập - Unix Timestamp
+
+	StatusCode statusCode = 1000;
+}
+
+/* Thiết bị */
+// Nhận được yêu cầu đăng ký thiết bị sản xuất
+message RegisterDeviceServerRequest {
+	string manToken = 1; // Mã sản xuất
+	string hardwareId = 2; // HardwareId của thiết bị cần đăng ký
+	string model = 3; // Model
+	string firmware = 4; // Firmware
+}
+
+// Phản hồi đăng ký thiết bị sản xuất
+message RegisterDeviceServerResponse {
+	string hardwareId = 1; // HardwareId của thiết bị đã đăng ký
+	string deviceToken = 2; // deviceToken nhận được sau đăng ký
+
+	StatusCode statusCode = 1000;
+}
+
+/* OnChanged Runtime */
+// [Deprecated]
+// Phản hồi content firmware theo packed cho thiết bị
+message DownloadFirmwareOnChangedDeviceServerResponse {
+	string deviceId = 1; // DeviceId cho việc đồng bộ tài khoản nhiều thiết bị
+	string hardwareId = 2; // HardwareId thiết bị khi qua Root
+	bytes data = 3; // Bytes data
+	uint32 dataSize = 4; //  Kích cỡ thực của dữ liệu trả về
+	uint32 pageIndex = 5; // Vị trí index hiện tại bắt đầu từ 0
+	uint32 totalPage = 6; // Tổng page
+	uint32 pageSize = 7; // Kích cỡ của array buffer(default = 1024)
+	uint32 fileSize = 8; // Kích cỡ file đơn vị là byte
+
+	StatusCode statusCode = 1000;
+}
+
+/* Thiết bị đăng ký WiFi */
+message DeviceServerMessage {
+	RegisterDeviceServerRequest registerDeviceServerRequest = 17;
+	RegisterDeviceServerResponse registerDeviceServerResponse = 18;
+}
+
+/* Events runtime từ server gửi về */
+message OnChangedServerMessage {
+	// [Deprecated]
+	DownloadFirmwareOnChangedDeviceServerResponse download = 8;
+}
+
+/***** Đóng gói ServerMessage *****/
+message AuthServerMessage {
+	LoginServerRequest loginServerRequest = 1;
+	LoginServerResponse loginServerResponse = 2;
+}
+
+message ServerMessage {
+	AuthServerMessage authServerMessage = 1;
+	DeviceServerMessage deviceServerMessage = 5;
+	OnChangedServerMessage onChangedServerMessage = 13;
+}
+
+/***** MainMessage *****/
+message MainMessage {
+	ServerMessage serverMessage = 1;
+	ClientMessage clientMessage = 2;
+    MeshMessage meshMessage = 3;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
