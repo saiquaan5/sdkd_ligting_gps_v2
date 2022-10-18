@@ -13,11 +13,6 @@
 
 #define TAG "GPS_TASK"
 
-#define GPS_ACTIVE 32
-#define GPS_RST 33
-#define S0 12
-#define S1 14
-#define SIM_PW 13
 
 #define ECHO_TEST_TXD (GPIO_NUM_17)
 #define ECHO_TEST_RXD (GPIO_NUM_16)
@@ -55,24 +50,24 @@ void switchingUartPortToGps(void)
 {
     gpio_reset_pin(GPS_ACTIVE);
     gpio_reset_pin(GPS_RST);
-    gpio_reset_pin(S0);
-    gpio_reset_pin(S1);
-    gpio_reset_pin(SIM_PW);
+    gpio_reset_pin(S0_MUX);
+    gpio_reset_pin(S1_MUX);
+    gpio_reset_pin(PWR_SIM);
 
     gpio_set_direction(GPS_ACTIVE, GPIO_MODE_OUTPUT);
     gpio_set_direction(GPS_RST, GPIO_MODE_OUTPUT);
-    gpio_set_direction(S0, GPIO_MODE_OUTPUT);
-    gpio_set_direction(S1, GPIO_MODE_OUTPUT);
-    gpio_set_direction(SIM_PW, GPIO_MODE_OUTPUT);
+    gpio_set_direction(S0_MUX, GPIO_MODE_OUTPUT);
+    gpio_set_direction(S1_MUX, GPIO_MODE_OUTPUT);
+    gpio_set_direction(PWR_SIM, GPIO_MODE_OUTPUT);
 
-    gpio_set_level(SIM_PW, 1); // Tat nguon sim
+    gpio_set_level(PWR_SIM, 0); // Tat nguon sim
     vTaskDelay(100 / portTICK_PERIOD_MS);
     gpio_set_level(GPS_ACTIVE, 1); // Kich muc cao ra app
     gpio_set_level(GPS_RST, 0);    // Muc cao reset
 
     // swich qua cong uart gps
-    gpio_set_level(S0, 0);
-    gpio_set_level(S1, 0);
+    gpio_set_level(S0_MUX, 0);
+    gpio_set_level(S1_MUX, 0);
 }
 
 void _gps_task(void *pv)

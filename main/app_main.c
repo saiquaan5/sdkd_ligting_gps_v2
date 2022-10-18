@@ -266,8 +266,8 @@ void app_main(void)
   
     // gpio_reset_pin(PWR_SIM);
     // gpio_reset_pin(NET_SIM);
-    // gpio_reset_pin(S0);
-    // gpio_reset_pin(S1);
+    // gpio_reset_pin(S0_MUX);
+    // gpio_reset_pin(S1_MUX);
     // gpio_reset_pin(GPS_ACTIVE);
     
 #if defined ENABLE_NETWORK

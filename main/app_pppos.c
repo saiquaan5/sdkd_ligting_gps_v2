@@ -20,7 +20,7 @@
 #include "sim7600.h"
 #include "driver/gpio.h"
 #include "app_pppos.h"
-
+#include "app_common.h"
 static const char* TAG = "APP_PPPOS";
 
 static EventGroupHandle_t event_group = NULL;
@@ -28,12 +28,6 @@ static const int CONNECT_BIT = BIT0;
 static const int STOP_BIT = BIT1;
 // static const int GOT_DATA_BIT = BIT2;
 
-#define PWR_SIM         13
-#define NET_SIM         23
-#define LED_ACT         27
-// #define GPS_ACTIVE      32
-#define S0              12
-#define S1              14
 
 typedef struct app_ppp_ {
     bool run;
@@ -48,12 +42,12 @@ void Power_On_Sim()
 {
     // gpio_reset_pin(PWR_SIM);
     // gpio_reset_pin(NET_SIM);
-    // gpio_reset_pin(S0);
+    // gpio_reset_pin(S);
     // gpio_reset_pin(S1);
     // gpio_reset_pin(GPS_ACTIVE);
     
-    gpio_set_direction(S0, GPIO_MODE_OUTPUT);
-    gpio_set_direction(S1, GPIO_MODE_OUTPUT);
+    gpio_set_direction(S0_MUX, GPIO_MODE_OUTPUT);
+    gpio_set_direction(S1_MUX, GPIO_MODE_OUTPUT);
     // gpio_set_direction(GPS_ACTIVE, GPIO_MODE_OUTPUT);
 
 
@@ -63,8 +57,8 @@ void Power_On_Sim()
 
     gpio_set_level(PWR_SIM, 0); // Bat nguon sim
     // gpio_set_level(GPS_ACTIVE, 0); // Tat nguon GPS
-    gpio_set_level(S0, 1); // chon che do sim
-    gpio_set_level(S1, 0); // chon che do sim
+    gpio_set_level(S0_MUX, 1); // chon che do sim
+    gpio_set_level(S1_MUX, 0); // chon che do sim
 
     gpio_set_level(NET_SIM, 1);
 

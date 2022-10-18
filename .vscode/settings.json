@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "app_gps.h": "c",
+        "app_network.h": "c",
+        "app_pppos.h": "c",
+        "app_common.h": "c"
+    }
+}

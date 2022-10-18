@@ -26,6 +26,16 @@
 
 #define AWAIT(a) if (a != ESP_OK) continue
 
+
+
+#define PWR_SIM         13
+#define NET_SIM         23
+#define LED_ACT         27
+#define S0_MUX             12
+#define S1_MUX              14
+#define GPS_ACTIVE 32
+#define GPS_RST 33
+
 typedef struct {
     int start_hour;
     int start_minute;
