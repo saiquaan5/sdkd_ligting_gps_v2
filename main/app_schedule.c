@@ -340,6 +340,31 @@ esp_err_t app_schedule_add_alarm(app_schedule_handle_t handle, int hour, int min
     return ESP_OK;
 }
 
+esp_err_t app_gps_set_time(app_schedule_handle_t handle, date_time_form_t time_form) {
+    if (handle == NULL) {
+        return ESP_FAIL;
+    }
+    struct tm time = {
+        .tm_year = time_form.year - 1900,
+        .tm_mon  = time_form.month - 1,  // 0-based
+        .tm_mday = time_form.day,
+        .tm_hour = time_form.hour,
+        .tm_min  = time_form.minute,
+        .tm_sec  = time_form.second,
+    };
+
+    if (ds3231_set_time(&handle->dev, &time) != ESP_OK) {
+        ESP_LOGE(TAG, "Could not set time.");
+        return ESP_FAIL;
+    }
+    struct timeval set_time = { .tv_sec = mktime(&time) };
+    settimeofday(&set_time, NULL);
+    ESP_LOGW(TAG, "set time GPS success");
+    handle->is_sync = false;
+    handle->is_force_sync = false;
+    return ESP_OK;
+}
+
 esp_err_t app_schedule_set_time(app_schedule_handle_t handle, date_time_form_t time_form) {
     if (handle == NULL) {
         return ESP_FAIL;
@@ -350,7 +375,7 @@ esp_err_t app_schedule_set_time(app_schedule_handle_t handle, date_time_form_t t
         .tm_mday = time_form.day,
         .tm_hour = time_form.hour,
         .tm_min  = time_form.minute,
-        .tm_sec  = 0
+        .tm_sec  = 0,
     };
 
     if (ds3231_set_time(&handle->dev, &time) != ESP_OK) {
@@ -381,3 +406,6 @@ esp_err_t app_schedule_set_mode(app_schedule_handle_t handle, operator_mode_t mo
     handle->mode = mode;
     return ESP_OK;
 }
+
+
+

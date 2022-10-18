@@ -14,6 +14,7 @@
 #define APP_NEXTION_EVENT_BASE      (200)
 #define APP_MODBUS_EVENT_BASE       (300)
 #define APP_CONTROLLER_EVENT_BASE   (400)
+#define APP_GPS_EVENT_BASE          (500)
 
 #define FIRMWARE_VERSION            "1.1.0"
 
@@ -54,6 +55,7 @@ typedef struct {
     int day;
     int month;
     int year;
+    int second;
 } date_time_form_t;
 
 typedef enum {
@@ -63,7 +65,6 @@ typedef enum {
 } operator_mode_t;
 
 typedef void(app_callback_t)(int event_id, void* data, int data_len);
-
 long long esp_tick_get();
 
 #endif

@@ -30,12 +30,15 @@
 #include "app_storage.h"
 #include "app_controller.h"
 
+#include "app_gps.h"
+
 #define ENABLE_NETWORK
 #define ENABLE_SCHEDULE
 #define ENABLE_OTA
 // #define ENABLE_MODBUS
 #define ENABLE_NEXTION
 #define ENABLE_WEBSOCKET
+#define ENABLE_GPS
 
 #define TAG "APP_MAIN"
 
@@ -46,6 +49,7 @@ static app_network_handle_t network_handle = NULL;
 static app_controller_handle_t controller_handle = NULL;
 static app_websocket_handle_t websocket_handle = NULL;
 static app_ota_handle_t ota_handle = NULL;
+static app_gps_handle_t gps_handle = NULL;
 
 void event_callback(int event_id, void* data, int data_len) {
     switch (event_id)
@@ -150,6 +154,21 @@ void event_callback(int event_id, void* data, int data_len) {
         app_nextion_set_console(nextion_handle, "Thiết lập thành công");
         break;
     }
+    case APP_GPS_EVENT_SET_TIME:
+        if (data == NULL || data_len != sizeof(date_time_form_t))
+        {
+            return;
+        }
+        date_time_form_t *time_form = (date_time_form_t *)data;
+        // ESP_LOGI(TAG, "Gps convert main: %02d:%02d:%02d  %02d/%02d/%04d", time_form->hour,
+        //          time_form->minute,
+        //          time_form->day,
+        //          time_form->month,
+        //          time_form->year);
+        app_gps_set_time(schedule_handle, *time_form);
+        ESP_LOGD(TAG, "Set time gps");
+        break;
+    break;
     case APP_NEXTION_EVENT_MANUAL_ON: {
         ESP_LOGD(TAG, "Has a manual on");
         app_controller_control_relay(controller_handle, true);
@@ -244,7 +263,13 @@ void app_main(void)
     app_storage_data_t* storage_data = app_storage_get_data(storage_handle);
 
     ESP_LOGI(TAG, "[Firmware version] %s", FIRMWARE_VERSION);
-
+  
+    // gpio_reset_pin(PWR_SIM);
+    // gpio_reset_pin(NET_SIM);
+    // gpio_reset_pin(S0);
+    // gpio_reset_pin(S1);
+    // gpio_reset_pin(GPS_ACTIVE);
+    
 #if defined ENABLE_NETWORK
     app_network_config_t network_config = {
         .is_using_wifi = false,
@@ -272,6 +297,8 @@ void app_main(void)
     websocket_handle = app_websocket_init(&websocket_config);
     app_websocket_start(websocket_handle);
 #endif
+
+
 
 #if (defined ENABLE_OTA) && (defined ENABLE_NETWORK)
     app_ota_cfg_t ota_config = {
@@ -349,6 +376,28 @@ void app_main(void)
 
     // app_schedule_add_alarm(schedule_handle, 0, 40, SCHEDULE_TYPE_ACTIVE_END);
 
+#endif
+
+
+#if defined ENABLE_GPS
+    app_gps_config_t app_gps_config = {
+        // .uart_config.baud_rate = 9600,
+        // .uart_config.data_bits = UART_DATA_8_BITS,
+        // .uart_config.parity = UART_PARITY_DISABLE,
+        // .uart_config.stop_bits = UART_STOP_BITS_1,
+        // .uart_config.flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
+        // .uart_config.source_clk = UART_SCLK_APB,
+    //         int uartPort; // Cau hinh port 1
+    // int tx_pin;
+    // int rx_pin;
+        .tx_pin = 17,
+        .rx_pin = 16,
+        .callback = &event_callback,
+        .network_handle = network_handle,
+        .schedule = schedule_handle,
+    };
+    gps_handle = app_gps_init(&app_gps_config);
+    app_gps_start(gps_handle);
 #endif
 
     app_controller_config_t controller_config = {

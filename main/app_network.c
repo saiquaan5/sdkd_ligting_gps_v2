@@ -30,8 +30,8 @@
 // #define EXAMPLE_ESP_WIFI_SSID      "Ticos Coffee"
 // #define EXAMPLE_ESP_WIFI_PASS      "ticoscoffee247"
 
-#define EXAMPLE_ESP_WIFI_SSID      "Ticos Coffee"
-#define EXAMPLE_ESP_WIFI_PASS      "ticoscoffee247"
+#define EXAMPLE_ESP_WIFI_SSID      "SDKD"
+#define EXAMPLE_ESP_WIFI_PASS      "SDKD@123"
 
 // #define EXAMPLE_ESP_WIFI_SSID      "Toright"
 // #define EXAMPLE_ESP_WIFI_PASS      "0326577774"

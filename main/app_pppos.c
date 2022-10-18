@@ -31,7 +31,7 @@ static const int STOP_BIT = BIT1;
 #define PWR_SIM         13
 #define NET_SIM         23
 #define LED_ACT         27
-#define GPS_ACTIVE      32
+// #define GPS_ACTIVE      32
 #define S0              12
 #define S1              14
 
@@ -46,15 +46,15 @@ typedef struct app_ppp_ {
 
 void Power_On_Sim()
 {
-    gpio_reset_pin(PWR_SIM);
-    gpio_reset_pin(NET_SIM);
-    gpio_reset_pin(S0);
-    gpio_reset_pin(S1);
-    gpio_reset_pin(GPS_ACTIVE);
+    // gpio_reset_pin(PWR_SIM);
+    // gpio_reset_pin(NET_SIM);
+    // gpio_reset_pin(S0);
+    // gpio_reset_pin(S1);
+    // gpio_reset_pin(GPS_ACTIVE);
     
     gpio_set_direction(S0, GPIO_MODE_OUTPUT);
     gpio_set_direction(S1, GPIO_MODE_OUTPUT);
-    gpio_set_direction(GPS_ACTIVE, GPIO_MODE_OUTPUT);
+    // gpio_set_direction(GPS_ACTIVE, GPIO_MODE_OUTPUT);
 
 
     gpio_set_direction(PWR_SIM, GPIO_MODE_OUTPUT);
@@ -62,12 +62,9 @@ void Power_On_Sim()
     gpio_set_direction(LED_ACT, GPIO_MODE_OUTPUT);
 
     gpio_set_level(PWR_SIM, 0); // Bat nguon sim
-    gpio_set_level(GPS_ACTIVE, 0); // Tat nguon GPS
+    // gpio_set_level(GPS_ACTIVE, 0); // Tat nguon GPS
     gpio_set_level(S0, 1); // chon che do sim
     gpio_set_level(S1, 0); // chon che do sim
-
-
-
 
     gpio_set_level(NET_SIM, 1);
 
@@ -84,6 +81,7 @@ void Power_On_Sim()
     gpio_set_level(NET_SIM, 0);
 
     vTaskDelay(25000/portTICK_PERIOD_MS);
+    ESP_LOGI(TAG, "Bat nguon 4G thanh cong");
 }
 
 static void modem_event_handler(void *event_handler_arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
@@ -175,7 +173,7 @@ void _ppp_task(void* pv) {
     /* create dte object */
     esp_modem_dte_config_t config = ESP_MODEM_DTE_DEFAULT_CONFIG();
     /* setup UART specific configuration based on kconfig options */
-    
+
     config.tx_io_num = CONFIG_EXAMPLE_MODEM_UART_TX_PIN;
     config.rx_io_num = CONFIG_EXAMPLE_MODEM_UART_RX_PIN;
     config.rts_io_num = CONFIG_EXAMPLE_MODEM_UART_RTS_PIN;

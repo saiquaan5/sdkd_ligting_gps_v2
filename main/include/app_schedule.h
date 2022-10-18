@@ -37,4 +37,6 @@ esp_err_t app_schedule_sync_time(app_schedule_handle_t handle);
 
 esp_err_t app_schedule_set_mode(app_schedule_handle_t handle, operator_mode_t mode);
 
+esp_err_t app_gps_set_time(app_schedule_handle_t handle, date_time_form_t time_form);
+
 #endif
